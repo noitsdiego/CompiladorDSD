@@ -1,6 +1,6 @@
 package co.edu.uniquindio.compiladores.logica.lexico
 
-class AnalizadorLexico(var codigoFuente: String)  {
+class AnalizadorLexico(var codigoFuente: String) {
 
     var posicionActual = 0
     var caracterActual = codigoFuente[0]
@@ -8,6 +8,9 @@ class AnalizadorLexico(var codigoFuente: String)  {
     var finCodigo = 0.toChar()
     var filaActual = 0
     var columnaActual = 0
+    var posicionInicialLexema = 0
+    var filaInicialLexema = 0
+    var columnaInicialLexema = 0
 
     fun obtenerSiguienteCaracter() {
         if (posicionActual == codigoFuente.length - 1) {
@@ -22,6 +25,14 @@ class AnalizadorLexico(var codigoFuente: String)  {
             posicionActual++
             caracterActual = codigoFuente[posicionActual]
         }
+    }
+
+    fun obtenerCaracterInicial() {
+
+        posicionActual = posicionInicialLexema
+        columnaActual = columnaInicialLexema
+        filaActual = filaInicialLexema
+        caracterActual = codigoFuente[posicionActual]
     }
 
     fun almacenarToken(lexema: String, categoria: Categoria, fila: Int, columna: Int) {
@@ -45,7 +56,9 @@ class AnalizadorLexico(var codigoFuente: String)  {
             }
 
             if (esEntero()) continue
-            if(esReal()) continue
+            if (esReal()) continue
+            if(esIdentificadorVariable()) continue
+
 
             almacenarToken("" + caracterActual, Categoria.NO_RECONOCIDO, filaActual, columnaActual)
             obtenerSiguienteCaracter()
@@ -55,12 +68,14 @@ class AnalizadorLexico(var codigoFuente: String)  {
 
     fun esEntero(): Boolean {
 
-        if(caracterActual == 'Z')
-        {
+        if (caracterActual == 'Z') {
             var lexema = ""
             var filaInicial = filaActual
             var columnaInicial = columnaActual
             var posicionInicial = posicionActual
+            posicionInicialLexema = posicionActual
+            columnaInicialLexema = columnaActual
+            filaInicialLexema = filaActual
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
@@ -85,19 +100,20 @@ class AnalizadorLexico(var codigoFuente: String)  {
 
     fun esReal(): Boolean {
 
-        if(caracterActual=='R')
-        {
+        if (caracterActual == 'R') {
             var lexema = ""
             var filaInicial = filaActual
             var columnaInicial = columnaActual
             var posicionInicial = posicionActual
+            posicionInicialLexema = posicionActual
+            columnaInicialLexema = columnaActual
+            filaInicialLexema = filaActual
+
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if(caracterActual =='R')
-            {
+            if (caracterActual == 'R') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
-
                 if (caracterActual == '.' || caracterActual.isDigit()) {
                     if (caracterActual == '.') {
                         lexema += caracterActual
@@ -112,8 +128,7 @@ class AnalizadorLexico(var codigoFuente: String)  {
                             hacerBT(filaInicial, columnaInicial, posicionInicial)
                             return false
                         }
-                    }
-                    else {
+                    } else {
 
                         lexema += caracterActual
                         obtenerSiguienteCaracter()
@@ -145,11 +160,65 @@ class AnalizadorLexico(var codigoFuente: String)  {
                             Categoria.REAL, filaInicial, columnaInicial
                     )
                     return true
+                } else {
+                    obtenerCaracterInicial()
+                    return false
                 }
+
+            } else {
+                obtenerCaracterInicial()
                 return false
-        }
-            return false
+            }
+
         }
         return false
+    }
+
+    fun esIdentificadorVariable(): Boolean {
+
+        if (caracterActual == '$') {
+            var lexema = ""
+            var filaInicial = filaActual
+            var columnaInicial = columnaActual
+            var posicionInicial = posicionActual
+
+            posicionInicialLexema = posicionActual
+            columnaInicialLexema = columnaActual
+            filaInicialLexema = filaActual
+
+            lexema += caracterActual
+            obtenerSiguienteCaracter()
+
+            if (caracterActual.isLetter()) {
+
+                lexema += caracterActual
+                obtenerSiguienteCaracter()
+                while (caracterActual.isLetter()) {
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                }
+
+                if(caracterActual.isDigit())
+                {
+                    lexema += caracterActual
+                    obtenerSiguienteCaracter()
+                    almacenarToken(lexema, Categoria.IDENTIFICADOR_VARIABLE, filaInicial, columnaInicial)
+                    return true
+                }else
+                {
+                    obtenerCaracterInicial()
+                    return false
+                }
+
+
+            }else {
+                obtenerCaracterInicial()
+                return false
+            }
+        }
+        else{
+            return false
         }
     }
+
+}

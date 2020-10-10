@@ -4,8 +4,8 @@ import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
 
 fun main(){
 
-    val lexico = AnalizadorLexico("RR R34.6 43.6RR3")
+    val lexico = AnalizadorLexico("\$\$hola \$JOLA1 RR RR43.. ")
     lexico.analizar()
-    print(lexico.listaTokens)
+    println(lexico.listaTokens)
 
 }
