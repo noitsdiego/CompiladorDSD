@@ -1,14 +1,13 @@
 package co.edu.uniquindio.compiladores.interfaz.app
 
 import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
-import co.edu.uniquindio.compiladores.logica.lexico.Token
 
 fun main(){
 
-    val lexico = AnalizadorLexico("etr  \$si\$ fbw rlsd -II +II")
+    val lexico = AnalizadorLexico("\$o Pal +I + AND NOT OR I **I +I //I *I* */I +II")
     lexico.analizar()
 
-    var array = lexico.listaTokens
+    val array = lexico.listaTokens
 
     for ( token in array)
     {
