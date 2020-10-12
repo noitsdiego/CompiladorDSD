@@ -5,7 +5,7 @@
 
 <AnchorPane prefHeight="494.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.edu.uniquindio.compiladores.controladores.InicioController">
    <children>
-      <Button fx:id="boton" layoutX="30.0" layoutY="23.0" mnemonicParsing="false" onAction="#cambiarValores" text="Ejecutar" textAlignment="CENTER" />
+      <Button fx:id="Ejecutar" layoutX="30.0" layoutY="23.0" mnemonicParsing="false" onAction="#AnalizarCodigo" text="Analizar Codigo" textAlignment="CENTER" />
       <TextArea fx:id="codigoFuente" layoutX="30.0" layoutY="59.0" prefHeight="200.0" prefWidth="564.0" />
       <TableView fx:id="tablaTokens" layoutX="30.0" layoutY="269.0" prefHeight="200.0" prefWidth="564.0">
         <columns>

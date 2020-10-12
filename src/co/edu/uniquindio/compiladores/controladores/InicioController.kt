@@ -1,18 +1,25 @@
 package co.edu.uniquindio.compiladores.controladores
 
+import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
-import javafx.scene.control.TextField
+import javafx.scene.control.TextArea
+
 
 
 class InicioController{
 
-    @FXML lateinit var cajon1: TextField
-    @FXML lateinit var cajon2: TextField
-    @FXML
-    fun cambiarValores ( e: ActionEvent){
-        val aux= cajon1.text
-        cajon1.text = cajon2.text
-        cajon2.text = aux
+    @FXML lateinit var codigoFuente: TextArea
+
+    fun AnalizarCodigo ( e: ActionEvent){
+
+        if(codigoFuente.text.length>0){
+
+            val lexico = AnalizadorLexico(codigoFuente.text)
+            lexico.analizar()
+
+            print(lexico.listaTokens)
+        }
+
     }
 }
