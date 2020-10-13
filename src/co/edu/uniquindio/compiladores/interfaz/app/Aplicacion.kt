@@ -1,17 +1,29 @@
 package co.edu.uniquindio.compiladores.interfaz.app
 
 import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
+import javafx.application.Application
+import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
+import javafx.scene.Scene
+import javafx.stage.Stage
 
-fun main(){
+class Aplicacion : Application() {
 
-    val lexico = AnalizadorLexico("_ || @hola_ °hola° ¬ «Soy una cadena» <d>")
-    lexico.analizar()
+    override fun start(primaryStage: Stage?) {
+        val loader = FXMLLoader(Aplicacion::class.java.getResource("/Inicio.fxml"))
+        val parent: Parent = loader.load()
 
-    val array = lexico.listaTokens
+        val scene = Scene(parent)
 
-    for ( token in array)
-    {
-        println(token)
+        primaryStage?.scene = scene
+        primaryStage?.title = "Compilador DSD"
+        primaryStage?.show()
+    }
+    companion object{
+        @JvmStatic
+        fun main( args: Array<String>){
+            launch(Aplicacion::class.java)
+        }
     }
 
 }

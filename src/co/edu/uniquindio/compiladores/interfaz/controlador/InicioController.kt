@@ -1,4 +1,4 @@
-package co.edu.uniquindio.compiladores.controladores
+package co.edu.uniquindio.compiladores.interfaz.controlador
 
 import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
 import javafx.event.ActionEvent
