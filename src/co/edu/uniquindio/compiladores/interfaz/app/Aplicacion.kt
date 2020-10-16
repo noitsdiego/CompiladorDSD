@@ -7,6 +7,9 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
 
+/*
+    @Autor: Diego riveros, Stefanny roman y Daniel Loaiza
+ */
 class Aplicacion : Application() {
 
     override fun start(primaryStage: Stage?) {
