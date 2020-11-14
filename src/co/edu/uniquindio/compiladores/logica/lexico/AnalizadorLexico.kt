@@ -35,6 +35,16 @@ class AnalizadorLexico(var codigoFuente: String) {
         }
     }
 
+    fun verificarFinalCodigo(): Boolean
+    {
+        if (posicionActual == codigoFuente.length - 1) {
+            return true
+        } else {
+           return false
+        }
+    }
+
+
     /*
     Obtiene el caracter inicial de un lexema que estaba siendo analizado
      */
@@ -376,11 +386,41 @@ Verifica si el token es una palabra reservada
             } else if (lexema == "etr" || lexema == "rls" || lexema == "Pal" || lexema == "crt"
                     || lexema == "fbw" || lexema == "\$si" || lexema == "prin" || lexema == "\$sino"
                     || lexema == "\$o" || lexema == "bbn" || lexema == "tvs" || lexema == "ffn"
-                    || lexema == "impp") {
+                    || lexema == "impp" || lexema == "eliw") {
 
                 almacenarToken(lexema, Categoria.PALABRA_RESERVADA, filaInicial, columnaInicial)
                 return true
 
+            } else if (lexema == "fun") {
+                almacenarToken(lexema, Categoria.FUNCION, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "mut") {
+                almacenarToken(lexema, Categoria.VARIABLE_MUTABLE, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "const") {
+                almacenarToken(lexema, Categoria.VARIABLE_CONSTANTE, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "ret") {
+                almacenarToken(lexema, Categoria.RETORNO, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "yarra") {
+                almacenarToken(lexema, Categoria.ARREGLO, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "carac") {
+                almacenarToken(lexema, Categoria.PAL_CONCATENACION, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "slac") {
+                almacenarToken(lexema, Categoria.PAL_RESERVADA_CLASE, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "priv") {
+                almacenarToken(lexema, Categoria.PAL_VISIBILIDAD_PRIVADA, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "pub") {
+                almacenarToken(lexema, Categoria.PAL_VISIBILIDAD_PUBLICA, filaInicial, columnaInicial)
+                return true
+            }else if (lexema == "global") {
+                almacenarToken(lexema, Categoria.VARIABLE_GLOBAL, filaInicial, columnaInicial)
+                return true
             } else {
                 obtenerCaracterInicial()
                 return false
@@ -720,22 +760,47 @@ Verifica si el token es un comentario de linea
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
-            while (caracterActual != '_') {
+            while (caracterActual != '_' && !verificarFinalCodigo()) {
+
+
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
             }
 
-            lexema += caracterActual
-            listaTokens.add(
-                    Token(
-                            lexema,
-                            Categoria.COMENTARIO_LINEA,
-                            filaActual,
-                            columnaActual
+            if(verificarFinalCodigo())
+            {
+                if(caracterActual == '_')
+                {
+                    lexema += caracterActual
+                    listaTokens.add(
+                            Token(
+                                    lexema,
+                                    Categoria.COMENTARIO_LINEA,
+                                    filaInicial,
+                                    columnaInicial
+                            )
                     )
-            )
-            obtenerSiguienteCaracter()
-            return true
+                    obtenerSiguienteCaracter()
+                    return true
+                }
+                obtenerCaracterInicial()
+                return false
+            }else
+            {
+                lexema += caracterActual
+                listaTokens.add(
+                        Token(
+                                lexema,
+                                Categoria.COMENTARIO_LINEA,
+                                filaInicial,
+                                columnaInicial
+                        )
+                )
+                obtenerSiguienteCaracter()
+                return true
+            }
+
+
 
         }
         return false
@@ -758,22 +823,45 @@ Verifica si el token es un comentario de bloque
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
-            while (caracterActual != '°') {
+            while (caracterActual != '°' && !verificarFinalCodigo()) {
+
+
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
             }
 
-            lexema += caracterActual
-            listaTokens.add(
-                    Token(
-                            lexema,
-                            Categoria.COMENTARIO_BLOQUE,
-                            filaActual,
-                            columnaActual
+            if(verificarFinalCodigo())
+            {
+                if(caracterActual == '°')
+                {
+                    lexema += caracterActual
+                    listaTokens.add(
+                            Token(
+                                    lexema,
+                                    Categoria.COMENTARIO_BLOQUE,
+                                    filaInicial,
+                                    columnaInicial
+                            )
                     )
-            )
-            obtenerSiguienteCaracter()
-            return true
+                    obtenerSiguienteCaracter()
+                    return true
+                }
+                obtenerCaracterInicial()
+                return false
+            }else
+            {
+                lexema += caracterActual
+                listaTokens.add(
+                        Token(
+                                lexema,
+                                Categoria.COMENTARIO_BLOQUE,
+                                filaInicial,
+                                columnaInicial
+                        )
+                )
+                obtenerSiguienteCaracter()
+                return true
+            }
 
         }
         return false
@@ -825,22 +913,45 @@ Verifica si el token es una cadena
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
-            while (caracterActual != '»') {
+            while (caracterActual != '»' && !verificarFinalCodigo()) {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
             }
 
-            lexema += caracterActual
-            listaTokens.add(
-                    Token(
-                            lexema,
-                            Categoria.CADENA,
-                            filaInicial,
-                            columnaInicial
+            if(verificarFinalCodigo())
+            {
+                if(caracterActual == '»')
+                {
+                    lexema += caracterActual
+                    listaTokens.add(
+                            Token(
+                                    lexema,
+                                    Categoria.CADENA,
+                                    filaInicial,
+                                    columnaInicial
+                            )
                     )
-            )
-            obtenerSiguienteCaracter()
-            return true
+                    obtenerSiguienteCaracter()
+                    return true
+                }
+                obtenerCaracterInicial()
+                return false
+            }else
+            {
+                lexema += caracterActual
+                listaTokens.add(
+                        Token(
+                                lexema,
+                                Categoria.CADENA,
+                                filaInicial,
+                                columnaInicial
+                        )
+                )
+                obtenerSiguienteCaracter()
+                return true
+            }
+
+
         }
 
         return false
