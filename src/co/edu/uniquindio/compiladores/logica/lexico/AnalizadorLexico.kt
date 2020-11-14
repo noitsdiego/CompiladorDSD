@@ -1,7 +1,12 @@
 package co.edu.uniquindio.compiladores.logica.lexico
 
+/*
+Clase que realiza el analisis lexico de un codigo
+@autor Diego riveros, Stefanny Roman & Daniel Loaiza
+ */
 class AnalizadorLexico(var codigoFuente: String) {
 
+    //atributos
     var posicionActual = 0
     var caracterActual = codigoFuente[0]
     var listaTokens = ArrayList<Token>()
@@ -12,6 +17,9 @@ class AnalizadorLexico(var codigoFuente: String) {
     var filaInicialLexema = 0
     var columnaInicialLexema = 0
 
+    /*
+    Obtiene el siguiente caracter
+     */
     fun obtenerSiguienteCaracter() {
         if (posicionActual == codigoFuente.length - 1) {
             caracterActual = finCodigo
@@ -27,6 +35,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         }
     }
 
+    /*
+    Obtiene el caracter inicial de un lexema que estaba siendo analizado
+     */
     fun obtenerCaracterInicial() {
 
         posicionActual = posicionInicialLexema
@@ -35,10 +46,16 @@ class AnalizadorLexico(var codigoFuente: String) {
         caracterActual = codigoFuente[posicionActual]
     }
 
+    /*
+    Almacena los tokens
+     */
     fun almacenarToken(lexema: String, categoria: Categoria, fila: Int, columna: Int) {
         listaTokens.add(Token(lexema, categoria, fila, columna))
     }
 
+    /*
+    Verifica el BT
+     */
     fun hacerBT(filaInicial: Int, columnaInicial: Int, posicionInicial: Int) {
         posicionActual = posicionInicial
         filaActual = filaInicial
@@ -46,6 +63,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         caracterActual = codigoFuente[posicionActual]
     }
 
+    /*
+    Analiza el codigo ingresado
+     */
     fun analizar() {
 
         while (caracterActual != finCodigo) {
@@ -57,8 +77,8 @@ class AnalizadorLexico(var codigoFuente: String) {
 
             if (esEntero()) continue
             if (esReal()) continue
-            if(esCadena()) continue
-            if(esCaracter()) continue
+            if (esCadena()) continue
+            if (esCaracter()) continue
             if (esPalabraReservada()) continue
             if (esIdentificadorVariable()) continue
             if (esIndentificadorClase()) continue
@@ -69,11 +89,11 @@ class AnalizadorLexico(var codigoFuente: String) {
             if (esOperadorRelacional()) continue
             if (esAgrupadorAbrir()) continue
             if (esAgrupadorCerrar()) continue
-            if(esTerminal()) continue
-            if(esSeparador()) continue
-            if(esComentarioLinea()) continue
-            if(esComentarioBloque()) continue
-            if(esFinDeCodigo()) continue
+            if (esTerminal()) continue
+            if (esSeparador()) continue
+            if (esComentarioLinea()) continue
+            if (esComentarioBloque()) continue
+            if (esFinDeCodigo()) continue
 
 
             almacenarToken("" + caracterActual, Categoria.NO_IDENTIFICADO, filaActual, columnaActual)
@@ -82,6 +102,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+    Verifica si el token es un entero
+     */
     fun esEntero(): Boolean {
 
         if (caracterActual == 'Z') {
@@ -114,6 +137,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    /*
+    Verifica si el token es un real
+    */
     fun esReal(): Boolean {
 
         if (caracterActual == 'R') {
@@ -190,6 +216,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    /*
+     Verifica si el token es una variable
+    */
     fun esIdentificadorVariable(): Boolean {
 
         if (caracterActual == '$') {
@@ -233,6 +262,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         }
     }
 
+    /*
+ Verifica si el token es un identificador de clase
+    */
     fun esIndentificadorClase(): Boolean {
 
         if (caracterActual == 'C') {
@@ -271,6 +303,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+Verifica si el token es un identificador de metodo
+*/
     fun esIdentificadorMetodo(): Boolean {
 
         if (caracterActual == 'M') {
@@ -308,6 +343,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         }
     }
 
+    /*
+Verifica si el token es una palabra reservada
+*/
     fun esPalabraReservada(): Boolean {
 
         if (caracterActual.isLetter() || caracterActual == '\$' || caracterActual == '+' || caracterActual == '-') {
@@ -355,6 +393,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+Verifica si el token es un operador aritmetico
+*/
     fun esOperadorAritmetico(): Boolean {
 
         if (caracterActual == '+') {
@@ -442,6 +483,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    /*
+Verifica si el token es un operador logico
+*/
     fun esOperadorLogico(): Boolean {
 
         if (caracterActual.isLetter() && caracterActual.isUpperCase()) {
@@ -480,6 +524,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+Verifica si el token es un operador de asignacion
+*/
     fun esOperadorAsignacion(): Boolean {
 
         if (caracterActual == 'I' || caracterActual == '+' || caracterActual == '-' || caracterActual == '*' || caracterActual == '/') {
@@ -524,6 +571,9 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
+    /*
+Verifica si el token es un operador relacional
+*/
     fun esOperadorRelacional(): Boolean {
 
         if (caracterActual.isLetter() && caracterActual.isUpperCase()) {
@@ -565,6 +615,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+Verifica si el token es un agrupador de abertura
+*/
     fun esAgrupadorAbrir(): Boolean {
         if (caracterActual == '>' || caracterActual == '!' || caracterActual == ')') {
             val filaInicio = filaActual
@@ -583,6 +636,9 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
+    /*
+Verifica si el token es un agrupador de cierre
+*/
     fun esAgrupadorCerrar(): Boolean {
         if (caracterActual == '<' || caracterActual == '¡' || caracterActual == '(') {
             val filaInicio = filaActual
@@ -601,7 +657,10 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
-    fun esTerminal(): Boolean{
+    /*
+Verifica si el token es terminal
+*/
+    fun esTerminal(): Boolean {
         if (caracterActual == '_') {
 
             var lexema = ""
@@ -620,7 +679,10 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
-    fun esSeparador(): Boolean{
+    /*
+Verifica si el token es un separador
+*/
+    fun esSeparador(): Boolean {
         if (caracterActual != '|') {
             return false
         }
@@ -641,10 +703,12 @@ class AnalizadorLexico(var codigoFuente: String) {
         return true
     }
 
-    fun esComentarioLinea(): Boolean{
+    /*
+Verifica si el token es un comentario de linea
+*/
+    fun esComentarioLinea(): Boolean {
 
-        if(caracterActual == '@')
-        {
+        if (caracterActual == '@') {
             var lexema = ""
             var filaInicial = filaActual
             var columnaInicial = columnaActual
@@ -677,10 +741,12 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
-    fun esComentarioBloque(): Boolean{
+    /*
+Verifica si el token es un comentario de bloque
+*/
+    fun esComentarioBloque(): Boolean {
 
-        if(caracterActual == '°')
-        {
+        if (caracterActual == '°') {
             var lexema = ""
             var filaInicial = filaActual
             var columnaInicial = columnaActual
@@ -714,7 +780,10 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
-    fun esFinDeCodigo(): Boolean{
+    /*
+Verifica si el token es el caracter de fin de codigo
+*/
+    fun esFinDeCodigo(): Boolean {
 
         if (caracterActual == '¬') {
 
@@ -739,10 +808,12 @@ class AnalizadorLexico(var codigoFuente: String) {
 
     }
 
-    fun esCadena(): Boolean{
+    /*
+Verifica si el token es una cadena
+    */
+    fun esCadena(): Boolean {
 
-        if(caracterActual == '«')
-        {
+        if (caracterActual == '«') {
             var lexema = ""
             val filaInicial = filaActual
             val columnaInicial = columnaActual
@@ -775,10 +846,12 @@ class AnalizadorLexico(var codigoFuente: String) {
         return false
     }
 
-    fun esCaracter():Boolean{
+    /*
+Verifica si el token es un caracter
+*/
+    fun esCaracter(): Boolean {
 
-        if(caracterActual == '<')
-        {
+        if (caracterActual == '<') {
             var lexema = ""
             val filaInicial = filaActual
             val columnaInicial = columnaActual
@@ -792,8 +865,7 @@ class AnalizadorLexico(var codigoFuente: String) {
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
-            if(caracterActual == '>')
-            {
+            if (caracterActual == '>') {
                 lexema += caracterActual
                 listaTokens.add(
                         Token(
@@ -805,8 +877,7 @@ class AnalizadorLexico(var codigoFuente: String) {
                 )
                 obtenerSiguienteCaracter()
                 return true
-            }else
-            {
+            } else {
                 obtenerCaracterInicial()
                 return false
             }

@@ -13,7 +13,9 @@ import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
 import java.util.*
 
-
+/*
+    @Autor: Diego riveros, Stefanny roman y Daniel Loaiza
+ */
 class InicioController: Initializable {
 
     @FXML lateinit var codigoFuente: TextArea
