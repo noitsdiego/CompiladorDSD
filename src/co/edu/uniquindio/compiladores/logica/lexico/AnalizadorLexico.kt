@@ -386,7 +386,7 @@ Verifica si el token es una palabra reservada
             } else if (lexema == "etr" || lexema == "rls" || lexema == "Pal" || lexema == "crt"
                     || lexema == "fbw" || lexema == "\$si" || lexema == "prin" || lexema == "\$sino"
                     || lexema == "\$o" || lexema == "bbn" || lexema == "tvs" || lexema == "ffn"
-                    || lexema == "impp" || lexema == "eliw") {
+                    || lexema == "impp" || lexema == "eliw" || lexema == "void") {
 
                 almacenarToken(lexema, Categoria.PALABRA_RESERVADA, filaInicial, columnaInicial)
                 return true
