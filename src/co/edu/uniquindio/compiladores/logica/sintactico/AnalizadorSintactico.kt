@@ -12,6 +12,8 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     var posicionActual = 0
     var tokenActual = listaTokens[0]
     var listaErrores = ArrayList<ErrorSintactico>()
+    var esMetodo = true
+    var esPosible = false
 
     /**
      * Funcion que nos permite ir cambiando de posicion en la lista de tokens
@@ -43,6 +45,11 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
         } else {
             Token("", Categoria.ERROR, 0, 0)
         }
+    }
+
+    fun hacerBacktracking(posi:String){
+        posicionActual=posi.toInt()
+        tokenActual = listaTokens[posicionActual]
     }
 
     /**
@@ -209,7 +216,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
 
     /**
         <ListaSentencias> ::= <Sentencia> [<ListaSentencias>]
-
+     */
     fun esListaSentencias():ArrayList<Sentencia>{
         val lista = ArrayList<Sentencia>()
         var sentencia: Sentencia? = esSentencia()
@@ -219,7 +226,710 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
         }
         return lista
     }
+
+    /**
+    <Sentencia> ::=  <Decision> | <DeclaracionVariable> | <Impresion> | <Ciclo> | <Lectura> | <ExpresionAsignacion>
+    | <InvocacionFuncion> | <Listas> | <Retorno>
+
+    <Sentencia> ::=  <Asignacion> | <IncrementoDecremento> |<Arreglo>
+
+     */
+    fun esSentencia():Sentencia?{
+
+        var sentencia:Sentencia? = esDecision()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esDeclaracion()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esImpresion()
+        if(sentencia != null){
+            return sentencia
+        }
+        //FALTA POR TERMINAR EL CICLO DO
+        sentencia = esCiclo()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esLectura()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esExpresionAsignacion()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esInvocacionFuncion()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esRetorno()
+        if(sentencia != null){
+            return sentencia
+        }
+        sentencia = esArreglo()
+        if(sentencia != null){
+            return sentencia
+        }
+        return null
+    }
+
+    /*
+        <Decision> ::= si  “(” <ExpresionLogica> “)” <BloqueSentencia> [autre <BloqueSentencia>]
+        <Decision> ::= $si “)” <ExpresionLogica> “(” <BloqueSentencias> [$sino<BloqueSentencia>]
+         */
+    fun esDecision():Decision?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "\$si"){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+                obtenerSiguienteToken()
+                esMetodo=false
+                var expresion = esExpresionLogica()
+                esMetodo=true
+                if(expresion != null){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                        obtenerSiguienteToken()
+                        var bloqueSentenciasS = esBloqueSentencias()
+                        if(bloqueSentenciasS != null){
+                            if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "\$sino"){
+                                obtenerSiguienteToken()
+                                var bloqueSentenciasA = esBloqueSentencias()
+                                if(bloqueSentenciasA != null){
+                                    return Decision(expresion, bloqueSentenciasS, bloqueSentenciasA)
+                                }
+                            } else{
+                                return Decision(expresion, bloqueSentenciasS, null)
+                            }
+                        }
+                    } else{
+                        reportarError("Hace falta el parentesis derecho")
+                    }
+                } else{
+                    reportarError("Error en la condición")
+                }
+            } else{
+                reportarError("Hace falta el parentesis izquierdo")
+            }
+        }
+        return null
+    }
+
+    /*
+    <Expresion> ::= <ExpresionLogica> | <ExpresionRelacional> | <ExpresionAritmetica>
+     */
+    fun esExpresion():Expresion?{
+
+        var expresion:Expresion? = esExpresionLogica()
+        if(expresion != null){
+            return expresion
+        }
+
+        var pos=(posicionActual).toString()
+        expresion = esExpresionRelacional()
+        if(expresion != null){
+            return expresion
+        }
+
+        if(esPosible){
+            hacerBacktracking(pos)
+            esPosible=false
+        }
+
+        expresion = esExpresionAritmetica()
+        if(expresion != null){
+            return expresion
+        }
+        return null
+    }
+
+    /*
+       <ExpresionLogica> ::= OperadorLogico <ExpresionRelacional> | <ExpresionRelacional> OperadorLogico <ExpresionRelacional>
+        */
+    fun esExpresionLogica():ExpresionLogica?{
+        if(tokenActual.categoria == Categoria.OPERADOR_LOGICO && tokenActual.lexema == "NOT"){
+            var operador = tokenActual
+            obtenerSiguienteToken()
+            var expresionRelacional = esExpresionRelacional()
+            if(expresionRelacional != null){
+                return ExpresionLogica(null, operador, expresionRelacional)
+            } else{
+                reportarError("Hace falta la exoresión relacional")
+            }
+        } else{
+            if(!esMetodo) {
+                val expresionRelacional = esExpresionRelacional()
+                if (expresionRelacional != null) {
+                    if (tokenActual.categoria == Categoria.OPERADOR_LOGICO) {
+                        if (tokenActual.lexema == "AND" || tokenActual.lexema == "OR") {
+                            var operador = tokenActual
+                            obtenerSiguienteToken()
+                            var expRelacional = esExpresionRelacional()
+                            if (expRelacional != null) {
+                                return ExpresionLogica(expresionRelacional, operador, expRelacional)
+                            } else {
+                                reportarError("Hace falta la segunda expresión relacional")
+                            }
+                        }
+                    } else {
+                        reportarError("Hace falta el operador lógico")
+                    }
+                } else {
+                    reportarError("Hace falta la expresión relacional")
+                }
+            }else{
+                print("no lo esta tomando")
+            }
+        }
+        return null
+    }
+
+    /*
+    <ExpresionRelacional> ::= <ExpresionAritmetica> OperadorRelacional <ExpresionAritmetica> | ffn | tvs
+    ¡pruebaM(4|M|3,2)..
+     */
+    fun esExpresionRelacional():ExpresionRelacional?{
+        var expresionAritmetica = esExpresionAritmetica()
+        if(expresionAritmetica != null){
+            if(tokenActual.categoria == Categoria.OPERADOR_RELACIONAL){
+                var operadorRelacional = tokenActual
+                obtenerSiguienteToken()
+                var expAritmetica = esExpresionAritmetica()
+                if(expAritmetica != null){
+                    return ExpresionRelacional(expresionAritmetica, operadorRelacional, expAritmetica)
+                } else{
+                    reportarError("Hace falta una segunda expresión aritmetica")
+                }
+            } else{
+                if (tokenActual.categoria == Categoria.OPERADOR_ARITMETICO){
+                    esPosible =true
+                    return null
+                }else{
+                    if(esMetodo){
+                        esPosible =true
+                        return null
+                    }else{
+                        reportarError("Hace falta un operador relacional")
+                    }
+
+                }
+
+            }
+        } else{
+            if(tokenActual.categoria == Categoria.PALABRA_RESERVADA){
+                if(tokenActual.lexema == "ffn" || tokenActual.lexema == "tvs"){
+                    var operador = tokenActual
+                    return ExpresionRelacional(null, operador, null)
+                }
+            } else{
+                reportarError("Hace falta una expresión relacional")
+            }
+        }
+        return null
+    }
+
+    /*
+    <ExpresionAritmetica> ::= <ExpresionAritmetica>[ OperadorAritmetico <ExpresionAritmetica>]
+     | <ValorNumerico>[OperadorAritmetico <ExpresionAritmetica>]
+     */
+    fun esExpresionAritmetica():ExpresionAritmetica?{
+        var valorNumerico:ValorNumerico?
+        if(!esMetodo && tokenActual.categoria == Categoria.SEPARADOR){
+            return null
+        }else{
+            valorNumerico = esValorNumerico()
+        }
+        if(valorNumerico != null){
+            if(tokenActual.categoria == Categoria.OPERADOR_ARITMETICO){
+                var operador = tokenActual
+                obtenerSiguienteToken()
+                var valorNum = esValorNumerico()
+                if(valorNum != null){
+                    return ExpresionAritmetica(valorNumerico, operador, valorNum)
+                } else{
+                    reportarError("Hace falta un valor numérico")
+                }
+            } else{
+                return ExpresionAritmetica(valorNumerico, null, null)
+            }
+        } else{
+            print("aqui es el error ${tokenActual.lexema}")
+            reportarError("Hace falta un valor numérico")
+        }
+        return null
+    }
+
+    /*
+        <ValorNumerico> ::= [<Signo>] decimal | [<Signo>] entero | [<Signo>] identificador
+        <ValorNumerico> ::= [Signo] rls | [Signo] etr | [Signo] <NombreVariable>
+         */
+    fun esValorNumerico():ValorNumerico?{
+        if(tokenActual.categoria == Categoria.OPERADOR_ARITMETICO && (tokenActual.lexema == "*P*"  || tokenActual.lexema == "*M*")) {
+            var signo = tokenActual
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.ENTERO || tokenActual.categoria == Categoria.REAL || tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+                var valor = tokenActual
+                obtenerSiguienteToken()
+                return ValorNumerico(valor,signo)
+            }else{
+                reportarError("No se a colocado un numero o identificador")
+            }
+        } else{
+            if(tokenActual.categoria == Categoria.ENTERO || tokenActual.categoria == Categoria.REAL || tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+                var valor =tokenActual
+                var signoVacio= Token("",Categoria.OPERADOR_ARITMETICO,-1,-1)
+                obtenerSiguienteToken()
+                return ValorNumerico(valor,signoVacio)
+            }
+        }
+        return null
+    }
+
+    /*
+        <Invocacion> ::= identificador ")" [<ListaArgumentos>] "(" "_”
+         */
+    fun esInvocacionFuncion():InvocacionFuncion?{
+        if (tokenActual.categoria == Categoria.IDENTIFICADOR_METODO) {
+            val nombreFuncion = tokenActual
+            obtenerSiguienteToken()
+            if (tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO) {
+                obtenerSiguienteToken()
+                val argumentos: ArrayList<Expresion> = esListaArgumentos()
+                if (tokenActual.categoria == Categoria.AGRUPADOR_DERECHO) {
+                    obtenerSiguienteToken()
+                    if (tokenActual.categoria == Categoria.FINAL_SENTENCIA) {
+                        obtenerSiguienteToken()
+                        esMetodo=false
+                        return InvocacionFuncion(nombreFuncion, argumentos)
+                    } else {
+                        reportarError("Falta fin de sentencia")
+                    }
+                } else {
+                    reportarError("Falta agrupador derecho")
+                }
+            } else {
+                reportarError("Falta agrupador izquierdo")
+            }
+        }
+        return null
+    }
+
+    /*
+    <ListaArgumentos> ::= <Expresion> ["," <ListaArgumentos>]
+     */
+    fun esListaArgumentos():ArrayList<Expresion>{
+        var lista = ArrayList<Expresion>()
+        var expresion = esExpresion()
+        while(expresion != null){
+            lista.add(expresion)
+            if(tokenActual.categoria == Categoria.SEPARADOR){
+                obtenerSiguienteToken()
+                expresion = esExpresion()
+            } else{
+                expresion = null
+            }
+        }
+        return lista
+    }
+
+    /*
+    <Retorno> ::= ret <Expresion> “_”
+     */
+    fun esRetorno():Retorno?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ret"){
+            obtenerSiguienteToken()
+            var expresion = esExpresion()
+            if(expresion != null){
+                if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
+                    obtenerSiguienteToken()
+                    return Retorno(expresion)
+                } else{
+                    reportarError("Hace falta el fin de sentencia al final del retorno")
+                }
+            } else{
+                reportarError("Error en la expresion del retorno")
+            }
+        }
+        return null
+    }
+
+    /*
+    <Lista> ::= yarra <identificador> _<Tipo Dato>_ “:” "(" [Entero] ")"
+
+     */
+    fun esArreglo():Arreglo?{
+
+        if(tokenActual.categoria == Categoria.ARREGLO && tokenActual.lexema =="yarra"){
+            obtenerSiguienteToken()
+            if (tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+                var nombreVariable=tokenActual
+                obtenerSiguienteToken()
+                if (tokenActual.lexema == "_"){
+                    obtenerSiguienteToken()
+                    var tipoLista=esTipoDato()
+                    if (tipoLista!=null){
+                        obtenerSiguienteToken()
+                        if (tokenActual.lexema == "_"){
+                            obtenerSiguienteToken()
+                            if (tokenActual.lexema == ":"){
+                                obtenerSiguienteToken()
+                                if (tokenActual.lexema == "("){
+                                    obtenerSiguienteToken()
+                                    if (tokenActual.lexema == ")"){
+                                        return Arreglo(nombreVariable,tipoLista)
+                                    }else{
+                                        if (tokenActual.categoria == Categoria.ENTERO) {
+                                            var numero = tokenActual
+                                            obtenerSiguienteToken()
+                                            if (tokenActual.lexema == ")"){
+                                                return Arreglo(nombreVariable,tipoLista,numero)
+                                            }else{
+                                                reportarError("Falta el parentesis que cierra")
+                                            }
+                                        }else{
+                                            reportarError("Se esperaba un valor numerico entero")
+                                        }
+                                    }
+                                }else{
+                                    reportarError("Falta el parentesis que abre")
+                                }
+                            }else{
+                                reportarError("Falta el operador de asignacion")
+                            }
+                        }else{
+                            reportarError("Falta '_' que cierra")
+                        }
+                    }else{
+                        reportarError("Falta especificar el tipo de lista")
+                    }
+                }else{
+                    reportarError("Falta '_' que abre")
+                }
+            }else{
+                reportarError("Falta el identificador de la lista")
+            }
+        }
+        return null
+    }
+
+    /*
+    <DeclaracionVariables> ::= <TipoDeclaracion> <TipoDato> <ListaVariables> “..”
+     */
+    fun esDeclaracion():Declaracion?{
+        var tipoDeclaracion = esTipoDeclaracion()
+        if(tipoDeclaracion != null){
+            obtenerSiguienteToken()
+            var tipoDato = esTipoDato()
+            if(tipoDato != null){
+                obtenerSiguienteToken()
+                var listaVariables = esListaVariables()
+                if(listaVariables != null){
+                    if(tokenActual.categoria == Categoria.FINAL_SENTENCIA && tokenActual.lexema == "_" ){
+                        obtenerSiguienteToken()
+                        return Declaracion(tipoDato, listaVariables)
+                    } else{
+                        reportarError("Hace falta el fin de sentencia declaracion")
+                    }
+                } else{
+                    reportarError("Hacen falta las variables")
+                }
+            } else{
+                reportarError("Hace falta el tipo de dato")
+            }
+        }
+        return null
+    }
+
+    /*
+    <TipoDeclaracion> ::= mut | const
+     */
+    fun esTipoDeclaracion():Token?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA){
+            if(tokenActual.lexema == "mut" || tokenActual.lexema == "const"){
+                return  tokenActual
+            }
+        }
+        return null
+    }
+
+    /*
+    <ListaVariables> ::= <Variable> [<ListaVariables>]
+     */
+    fun esListaVariables():ArrayList<Variable>{
+        var lista = ArrayList<Variable>()
+        var variable = esNombreVariable()
+        while(variable != null){
+            lista.add(variable)
+            variable = esNombreVariable()
+        }
+        return lista
+    }
+
+    /*
+    <Variable> ::= identificador ["I" <Expresion>]
+     */
+    fun esNombreVariable():Variable?{
+        if(tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+            var nombreVariable = tokenActual
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.OPERADOR_ASIGNACION){
+                obtenerSiguienteToken()
+                var expresion = esExpresion()
+                if(expresion != null){
+                    return Variable(nombreVariable, expresion)
+                } else{
+                    reportarError("Hace falta la expresión")
+                }
+            } else{
+                return Variable(nombreVariable, null)
+            }
+        }
+        return null
+    }
+
+    /*
+    <Impresion> ::= impp“<” <Expresion> “>” “_”
+     */
+    fun esImpresion():Impresion?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "impp"){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+                obtenerSiguienteToken()
+                var expresion = esExpresion()
+                if(expresion != null){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                        obtenerSiguienteToken()
+                        if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
+                            obtenerSiguienteToken()
+                            return Impresion(expresion)
+                        } else{
+                            reportarError("Hace falta el fin de sentencia")
+                        }
+                    } else{
+                        reportarError("Hace falta el parentesis derecho")
+                    }
+                }
+            } else{
+                reportarError("Hace falta el parentesis izquierdo")
+            }
+        }
+        return null
+    }
+
+    /*
+    <Ciclos> ::= <CicloPour> | <CicloAlors> | <CicloFaire>
+     */
+    fun esCiclo():Ciclo?{
+
+        var ciclo:Ciclo? = esCicloPour()
+        if(ciclo != null){
+            return ciclo
+        }
+        ciclo = esCicloAlors()
+        if(ciclo != null){
+            return ciclo
+        }
+
+        return null
+    }
+
+    /*
+    <CicloPour> ::= fbw ”)“ <Condición> “(”  <BloqueSentencias>
+     */
+    fun esCicloPour():CicloFbw?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "fbw"){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+                obtenerSiguienteToken()
+                var cond = esCondicion()
+                print("Condicion " + cond)
+                if(cond != null){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                        print("parentesis dere " + tokenActual)
+                        obtenerSiguienteToken()
+                        var bloqueSentencias = esBloqueSentencias()
+                        if(bloqueSentencias != null){
+                            obtenerSiguienteToken()
+                            return CicloFbw(cond, bloqueSentencias)
+                        }
+                    } else{
+                        reportarError("Hace falta el parentesis derecho")
+                    }
+                } else{
+                    reportarError("Hace falta la condición")
+                }
+            }
+        }
+        return null
+    }
+
+
+    /*
+    <CicloAlors> ::= eliw ”)“ <NombreVariable> <ExpresionRelacional> ”)” “{“ <Sentencia> <ExpresionIterador> “}”
+     */
+    fun esCicloAlors():CicloEliw?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "eliw"){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+                obtenerSiguienteToken()
+                var variable = esNombreVariable()
+                if(variable != null){
+                    var expresionRelacional = esExpresionRelacional()
+                    if(expresionRelacional != null){
+                        if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                            obtenerSiguienteToken()
+                            var bloqueSentencias = esBloqueSentenciasCiclo()
+                            if(bloqueSentencias != null){
+                                obtenerSiguienteToken()
+                                return CicloEliw(expresionRelacional, bloqueSentencias)
+                            }
+                        } else{
+                            reportarError("Hace falta el parentesis derecho")
+                        }
+                    } else{
+                        reportarError("Hace falta la expresión relacional ciclo alors")
+                    }
+                } else{
+                    reportarError("Hace falta la variable")
+                }
+            } else{
+                reportarError("Hace falta el parentesis izquierdo")
+            }
+        }
+        return null
+    }
+
+    /*
+    <BloqueSentenciasCiclo> ::= "{" [<ListaSentencias>] <ExpresionIterador>"}"
+     */
+    fun esBloqueSentenciasCiclo():ArrayList<Sentencia>? {
+        if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+            obtenerSiguienteToken()
+            var listaSentencias = esListaSentencias()
+            print("listasentencias " + listaSentencias)
+            var expresionIterador = esExpresionIterador()
+            if(expresionIterador != null){
+                print("Iterador ciclo " + tokenActual)
+                obtenerSiguienteToken()
+                if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                    obtenerSiguienteToken()
+                    return listaSentencias
+                } else{
+                    reportarError("Falta la llave derecha del bloque de sentencias")
+                }
+            } else{
+                reportarError("Hace falta el iterador al final del bloque de sentencias del ciclo")
+            }
+        } else{
+            reportarError("Falta la llave izquierda del bloque de sentencias")
+        }
+        return null
+    }
+
+    /*
+    <Condicion> ::= <NombreVariable> “,” <ExpresionLogica> “,” <NombreVariable> <ExpresionIterador>
+     */
+    fun esCondicion():Condicion?{
+        var variable = esNombreVariable()
+        if(variable != null){
+            if(tokenActual.categoria == Categoria.SEPARADOR) {
+                esMetodo=false
+                obtenerSiguienteToken()
+                var expresionLogica = esExpresionLogica()
+                esMetodo=true
+                if (expresionLogica != null) {
+                    if (tokenActual.categoria == Categoria.SEPARADOR) {
+                        obtenerSiguienteToken()
+                        var variabl = esNombreVariable()
+                        if (variabl != null) {
+                            print("\n \n  este llega en el error antes ${tokenActual.lexema} \n \n ")
+                            var expresionIterador = esExpresionIterador()
+                            if (expresionIterador != null) {
+                                obtenerSiguienteToken()
+                                return Condicion(variable, expresionLogica, variabl, expresionIterador)
+                            } else {
+                                reportarError("Hace falta el iterador")
+                            }
+                        } else {
+                            reportarError("Hace falta indicar el nombre de la variable")
+                        }
+                    } else {
+                        reportarError("Hace falta la coma")
+                    }
+                } else {
+                    reportarError("Hace falta una expresión lógica")
+                }
+            }
+        } else{
+            reportarError("No se encuentran variables")
+        }
+        return null
+    }
+
+    /*
+    <Lectura> ::= lee <NombreIdentificador> “_”
+     */
+    fun esLectura():Lectura?{
+        if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "lee"){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+                var nombreVariable = tokenActual
+                obtenerSiguienteToken()
+                if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
+                    obtenerSiguienteToken()
+                    return Lectura(nombreVariable)
+                } else{
+                    reportarError("Hace falta el fin de sentencia")
+                }
+            } else{
+                reportarError("Hace falta el nombre dle identificador de la variable")
+            }
+        }
+        return null
+    }
+
+    /*
+    <ExpresionAsignacion> ::= Identificador OperadorAsignacion <Expresion> ".." | Identificador OperadorAsignacion <InvocacionFuncion> ".."
+     */
+    fun esExpresionAsignacion():Asignacion?{
+        var posicion = posicionActual
+        if(tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+            var identificador = tokenActual
+            obtenerSiguienteToken()
+            if(tokenActual.categoria == Categoria.OPERADOR_ASIGNACION){
+                if(tokenActual.lexema == "I" || tokenActual.lexema == "+I" || tokenActual.lexema == "-I" ||
+                        tokenActual.lexema == "*I" || tokenActual.lexema == "/I"){
+                    var operadorAsignacion = tokenActual
+                    obtenerSiguienteToken()
+                    var expresion = esExpresion()
+                    if(expresion != null){
+                        if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
+                            obtenerSiguienteToken()
+                            return Asignacion(identificador, operadorAsignacion, expresion)
+                        } else{
+                            reportarError("Hace falta el fin de sentencia en la expresión de asignación")
+                        }
+                    } else{
+                        reportarError("Hace falta la expresión de asignación")
+                    }
+                }
+            } else{
+                reportarError("Hace falta el operador de asignación")
+            }
+        }
+        return null
+    }
+
+    /*
+    <ExpresionIterador> ::= <ExpresionIncremento> | <ExpresionDecremento>
     */
+    fun esExpresionIterador():Iterador?{
+        if(tokenActual.categoria == Categoria.OPERADOR_INCREMENTO || tokenActual.categoria == Categoria.OPERADOR_DECREMENTO){
+            return Iterador(tokenActual)
+        }
+        return null
+    }
 
     fun reportarError(mensaje:String){
         listaErrores.add(ErrorSintactico(mensaje, tokenActual.fila, tokenActual.columna))

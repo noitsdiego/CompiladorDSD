@@ -2,7 +2,7 @@ package co.edu.uniquindio.compiladores.logica.sintactico
 
 import javafx.scene.control.TreeItem
 
-class Condicion (var nombreVariable:Variable, var expresionLogica:ExpresionLogica, var nombreVar:Variable, var incrementoDecremento:IncrementoDecremento) {
+class Condicion (var nombreVariable:Variable, var expresionLogica:ExpresionLogica, var nombreVar:Variable, var incrementoDecremento:Iterador) {
 
     override fun toString(): String {
         return "Condicion(nombreVariable=$nombreVariable, expresionLogica=$expresionLogica, nombreVar=$nombreVar, expresionIterador=$incrementoDecremento)"

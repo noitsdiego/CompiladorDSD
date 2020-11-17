@@ -1,0 +1,20 @@
+package co.edu.uniquindio.compiladores.logica.sintactico
+
+import co.edu.uniquindio.compiladores.logica.lexico.Token
+import javafx.scene.control.TreeItem
+
+class Iterador (var expresion: Token?){
+
+    override fun toString(): String {
+        return "ExpresionIterador(expresion=$expresion)"
+    }
+
+    fun getArbolVisual(): TreeItem<String> {
+
+        var raiz = TreeItem<String>("Exprecion Iterador")
+        raiz.children.add(TreeItem("${expresion!!.lexema}"))
+
+        return raiz
+    }
+
+}
