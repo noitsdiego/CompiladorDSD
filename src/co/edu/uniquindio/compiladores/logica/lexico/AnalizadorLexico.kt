@@ -10,6 +10,7 @@ class AnalizadorLexico(var codigoFuente: String) {
     var posicionActual = 0
     var caracterActual = codigoFuente[0]
     var listaTokens = ArrayList<Token>()
+    var listaErrores =ArrayList<Error>()
     var finCodigo = 0.toChar()
     var filaActual = 0
     var columnaActual = 0
@@ -945,6 +946,7 @@ Verifica si el token es un comentario de bloque
                                 filaInicial,
                                 columnaInicial
                         )
+
                 )
                 obtenerSiguienteCaracter()
                 return true

@@ -2,6 +2,7 @@ package co.edu.uniquindio.compiladores.logica.sintactico
 
 import co.edu.uniquindio.compiladores.logica.lexico.Categoria
 import co.edu.uniquindio.compiladores.logica.lexico.Token
+import co.edu.uniquindio.compiladores.logica.lexico.Error
 import java.util.ArrayList
 
 class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
@@ -11,7 +12,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      */
     var posicionActual = 0
     var tokenActual = listaTokens[0]
-    var listaErrores = ArrayList<ErrorSintactico>()
+    var listaErrores = ArrayList<Error>()
     var esMetodo = true
     var esPosible = false
 
@@ -32,7 +33,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      * @param mensaje; mensaje generado por el error
      */
     fun reportarErrores(mensaje: String) {
-        listaErrores.add(ErrorSintactico(mensaje, tokenActual.fila, tokenActual.columna))
+        listaErrores.add(Error(mensaje, tokenActual.fila, tokenActual.columna))
     }
 
     /**
@@ -932,7 +933,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     fun reportarError(mensaje:String){
-        listaErrores.add(ErrorSintactico(mensaje, tokenActual.fila, tokenActual.columna))
+        listaErrores.add(Error(mensaje, tokenActual.fila, tokenActual.columna))
     }
 
 }

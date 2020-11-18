@@ -22,6 +22,7 @@ class InicioController: Initializable {
 
     @FXML lateinit var codigoFuente: TextArea
     @FXML lateinit var tablaTokens: TableView<Token>
+    @FXML lateinit var tablaErrores: TableView<Error>
     @FXML lateinit var colLexema: TableColumn<Token, String>
     @FXML lateinit var colCategoria: TableColumn<Token, String>
     @FXML lateinit var colFila: TableColumn<Token, String>
@@ -42,12 +43,15 @@ class InicioController: Initializable {
             val lexico = AnalizadorLexico(codigoFuente.text)
             lexico.analizar()
             tablaTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
+           // tablaErrores.items = FXCollections.observableArrayList(lexico.listaErrores)
+            if(lexico.listaErrores.isEmpty())
+            {
+                val sintaxis = AnalizadorSintactico(lexico.listaTokens)
+                val uc = sintaxis.esUnidadDeCompilacion()
 
-            val sintaxis = AnalizadorSintactico(lexico.listaTokens)
-            val uc = sintaxis.esUnidadDeCompilacion()
-
-            if (uc != null) {
-                arbolVisual.root = uc.getArbolVisual()
+                if (uc != null) {
+                    arbolVisual.root = uc.getArbolVisual()
+                }
             }
         }
     }
