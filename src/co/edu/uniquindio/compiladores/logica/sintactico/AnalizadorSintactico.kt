@@ -93,10 +93,10 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
                 var tipoRetorno = tipoRetorno()
                 if(tipoRetorno != null) {
                     obtenerSiguienteToken()
-                    if (tokenActual.categoria == Categoria.AGRUPADOR_DERECHO) {
+                    if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR) {
                         obtenerSiguienteToken()
                         var listaParametros = esListaParametros()
-                        if (tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO) {
+                        if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR) {
                             obtenerSiguienteToken()
                             var bloqueSentencias = esBloqueSentencias()
                             if (bloqueSentencias != null) {
@@ -144,7 +144,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
                 obtenerSiguienteToken()
                 parametro = esParametro()
             } else{
-                if(tokenActual.categoria != Categoria.AGRUPADOR_DERECHO){
+                if(tokenActual.categoria != Categoria.AGRUPADOR_METODO_ABRIR){
                     reportarError("Hace falta la coma en la lista de parametros")
                 }
                 break
@@ -199,10 +199,10 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
 
          */
     fun esBloqueSentencias():ArrayList<Sentencia>? {
-        if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_DERECHO){
+        if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_ABRIR){
             obtenerSiguienteToken()
             var listaSentencias = esListaSentencias()
-            if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_IZQUIERDA){
+            if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_CERRAR){
                 obtenerSiguienteToken()
                 return listaSentencias
             } else{
@@ -283,13 +283,13 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esDecision():Decision?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "\$si"){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+            if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR){
                 obtenerSiguienteToken()
                 esMetodo=false
                 var expresion = esExpresionLogica()
                 esMetodo=true
                 if(expresion != null){
-                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR){
                         obtenerSiguienteToken()
                         var bloqueSentenciasS = esBloqueSentencias()
                         if(bloqueSentenciasS != null){
@@ -493,10 +493,10 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
         if (tokenActual.categoria == Categoria.IDENTIFICADOR_METODO) {
             val nombreFuncion = tokenActual
             obtenerSiguienteToken()
-            if (tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO) {
+            if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR) {
                 obtenerSiguienteToken()
                 val argumentos: ArrayList<Expresion> = esListaArgumentos()
-                if (tokenActual.categoria == Categoria.AGRUPADOR_DERECHO) {
+                if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR) {
                     obtenerSiguienteToken()
                     if (tokenActual.categoria == Categoria.FINAL_SENTENCIA) {
                         obtenerSiguienteToken()
@@ -694,11 +694,11 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esImpresion():Impresion?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "impp"){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+            if(tokenActual.categoria == Categoria.AGRUPADOR_IMPRIMIR_ABRIR){
                 obtenerSiguienteToken()
                 var expresion = esExpresion()
                 if(expresion != null){
-                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_IMPRIMIR_CERRAR){
                         obtenerSiguienteToken()
                         if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
                             obtenerSiguienteToken()
@@ -740,12 +740,12 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esCicloPour():CicloFbw?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "fbw"){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+            if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR){
                 obtenerSiguienteToken()
                 var cond = esCondicion()
                 print("Condicion " + cond)
                 if(cond != null){
-                    if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                    if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR){
                         print("parentesis dere " + tokenActual)
                         obtenerSiguienteToken()
                         var bloqueSentencias = esBloqueSentencias()
@@ -771,13 +771,13 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esCicloAlors():CicloEliw?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "eliw"){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+            if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR){
                 obtenerSiguienteToken()
                 var variable = esNombreVariable()
                 if(variable != null){
                     var expresionRelacional = esExpresionRelacional()
                     if(expresionRelacional != null){
-                        if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                        if(tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR){
                             obtenerSiguienteToken()
                             var bloqueSentencias = esBloqueSentenciasCiclo()
                             if(bloqueSentencias != null){
@@ -804,7 +804,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     <BloqueSentenciasCiclo> ::= "{" [<ListaSentencias>] <ExpresionIterador>"}"
      */
     fun esBloqueSentenciasCiclo():ArrayList<Sentencia>? {
-        if(tokenActual.categoria == Categoria.AGRUPADOR_IZQUIERDO){
+        if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_ABRIR){
             obtenerSiguienteToken()
             var listaSentencias = esListaSentencias()
             print("listasentencias " + listaSentencias)
@@ -812,7 +812,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
             if(expresionIterador != null){
                 print("Iterador ciclo " + tokenActual)
                 obtenerSiguienteToken()
-                if(tokenActual.categoria == Categoria.AGRUPADOR_DERECHO){
+                if(tokenActual.categoria == Categoria.AGRUPADOR_SEN_CERRAR){
                     obtenerSiguienteToken()
                     return listaSentencias
                 } else{
