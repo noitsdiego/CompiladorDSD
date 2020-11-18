@@ -97,8 +97,12 @@ class AnalizadorLexico(var codigoFuente: String) {
             if (esOperadorLogico()) continue
             if (esOperadorAsignacion()) continue
             if (esOperadorRelacional()) continue
-            if (esAgrupadorAbrir()) continue
-            if (esAgrupadorCerrar()) continue
+            if (esAgrupadorAbrirMetodo()) continue
+            if (esAgrupadorCerrarMetodo()) continue
+            if (esAgrupadorAbrirSentencia()) continue
+            if (esAgrupadorCerrarSentencia()) continue
+            if (esAgrupadorAbrirImprimir()) continue
+            if (esAgrupadorCerrarImprimir()) continue
             if (esTerminal()) continue
             if (esSeparador()) continue
             if (esComentarioLinea()) continue
@@ -656,10 +660,10 @@ Verifica si el token es un operador relacional
     }
 
     /*
-Verifica si el token es un agrupador de abertura
+Verifica si el token es un agrupador metodo de apertura
 */
-    fun esAgrupadorAbrir(): Boolean {
-        if (caracterActual == '>' || caracterActual == '!' || caracterActual == ')') {
+    fun esAgrupadorAbrirMetodo(): Boolean {
+        if (caracterActual == ')') {
             val filaInicio = filaActual
             val columnaInicio = columnaActual
             var lexema = ""
@@ -667,7 +671,7 @@ Verifica si el token es un agrupador de abertura
             lexema += caracterActual
             almacenarToken(
                     lexema,
-                    Categoria.AGRUPADOR_DERECHO, filaInicio, columnaInicio
+                    Categoria.AGRUPADOR_METODO_ABRIR, filaInicio, columnaInicio
             )
             obtenerSiguienteCaracter()
             return true
@@ -677,10 +681,10 @@ Verifica si el token es un agrupador de abertura
     }
 
     /*
-Verifica si el token es un agrupador de cierre
+Verifica si el token es un agrupador metodo de cierre
 */
-    fun esAgrupadorCerrar(): Boolean {
-        if (caracterActual == '<' || caracterActual == '¡' || caracterActual == '(') {
+    fun esAgrupadorCerrarMetodo(): Boolean {
+        if (caracterActual == '(') {
             val filaInicio = filaActual
             val columnaInicio = columnaActual
             var lexema = ""
@@ -688,7 +692,90 @@ Verifica si el token es un agrupador de cierre
             lexema += caracterActual
             almacenarToken(
                     lexema,
-                    Categoria.AGRUPADOR_IZQUIERDO, filaInicio, columnaInicio
+                    Categoria.AGRUPADOR_METODO_CERRAR, filaInicio, columnaInicio
+            )
+            obtenerSiguienteCaracter()
+            return true
+        }
+        return false
+
+    }
+    /*
+    Verifica si el token es un agrupador sentencia de apertura
+*/
+    fun esAgrupadorAbrirSentencia(): Boolean {
+        if (caracterActual == '!') {
+            val filaInicio = filaActual
+            val columnaInicio = columnaActual
+            var lexema = ""
+
+            lexema += caracterActual
+            almacenarToken(
+                    lexema,
+                    Categoria.AGRUPADOR_SEN_ABRIR, filaInicio, columnaInicio
+            )
+            obtenerSiguienteCaracter()
+            return true
+        }
+        return false
+
+    }
+
+    /*
+Verifica si el token es un agrupador sentencia de cierre
+*/
+    fun esAgrupadorCerrarSentencia(): Boolean {
+        if (caracterActual == '¡') {
+            val filaInicio = filaActual
+            val columnaInicio = columnaActual
+            var lexema = ""
+
+            lexema += caracterActual
+            almacenarToken(
+                    lexema,
+                    Categoria.AGRUPADOR_SEN_CERRAR, filaInicio, columnaInicio
+            )
+            obtenerSiguienteCaracter()
+            return true
+        }
+        return false
+
+    }
+
+   /*
+    Verifica si el token es un agrupador imprimir de apertura
+*/
+    fun esAgrupadorAbrirImprimir(): Boolean {
+        if (caracterActual == '>') {
+            val filaInicio = filaActual
+            val columnaInicio = columnaActual
+            var lexema = ""
+
+            lexema += caracterActual
+            almacenarToken(
+                    lexema,
+                    Categoria.AGRUPADOR_IMPRIMIR_ABRIR, filaInicio, columnaInicio
+            )
+            obtenerSiguienteCaracter()
+            return true
+        }
+        return false
+
+    }
+
+    /*
+Verifica si el token es un agrupador imprimir de cierre
+*/
+    fun esAgrupadorCerrarImprimir(): Boolean {
+        if (caracterActual == '<') {
+            val filaInicio = filaActual
+            val columnaInicio = columnaActual
+            var lexema = ""
+
+            lexema += caracterActual
+            almacenarToken(
+                    lexema,
+                    Categoria.AGRUPADOR_IMPRIMIR_CERRAR, filaInicio, columnaInicio
             )
             obtenerSiguienteCaracter()
             return true
