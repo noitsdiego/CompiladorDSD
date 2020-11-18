@@ -27,6 +27,7 @@ class Aplicacion : Application() {
         fun main( args: Array<String>){
             launch(Aplicacion::class.java)
         }
+
     }
 
 }

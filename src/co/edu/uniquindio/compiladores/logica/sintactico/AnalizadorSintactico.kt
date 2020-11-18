@@ -87,7 +87,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esFuncion(): Funcion? {
         if(tokenActual.categoria == Categoria.FUNCION && tokenActual.lexema == "fun"){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.IDENTIFICADOR_CLASE){
+            if(tokenActual.categoria == Categoria.IDENTIFICADOR_METODO){
                 var nombreFuncion = tokenActual
                 obtenerSiguienteToken()
                 var tipoRetorno = tipoRetorno()

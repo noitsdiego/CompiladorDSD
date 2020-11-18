@@ -1,6 +1,7 @@
 package co.edu.uniquindio.compiladores.interfaz.controlador
 
 import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
+import co.edu.uniquindio.compiladores.logica.sintactico.AnalizadorSintactico
 import co.edu.uniquindio.compiladores.logica.lexico.Token
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
@@ -9,6 +10,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.TextArea
+import javafx.scene.control.TreeView
 import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
 import java.util.*
@@ -24,6 +26,7 @@ class InicioController: Initializable {
     @FXML lateinit var colCategoria: TableColumn<Token, String>
     @FXML lateinit var colFila: TableColumn<Token, String>
     @FXML lateinit var colColumna: TableColumn<Token, String>
+    @FXML lateinit var arbolVisual:TreeView<String>
 
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
@@ -33,15 +36,19 @@ class InicioController: Initializable {
         colColumna.cellValueFactory = PropertyValueFactory("columna")
     }
 
-    fun AnalizarCodigo ( e: ActionEvent){
+    fun AnalizarCodigo ( e: ActionEvent) {
 
-        if(codigoFuente.text.length>0){
-
+        if (codigoFuente.text.length > 0) {
             val lexico = AnalizadorLexico(codigoFuente.text)
             lexico.analizar()
             tablaTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
-            print(lexico.listaTokens)
-        }
 
+            val sintaxis = AnalizadorSintactico(lexico.listaTokens)
+            val uc = sintaxis.esUnidadDeCompilacion()
+
+            if (uc != null) {
+                arbolVisual.root = uc.getArbolVisual()
+            }
+        }
     }
 }
