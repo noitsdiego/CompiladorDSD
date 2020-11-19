@@ -12,7 +12,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      */
     var posicionActual = 0
     var tokenActual = listaTokens[0]
-    var listaErrores = ArrayList<Error>()
+    var listaErrores = ArrayList<ErrorSintactico>()
     var esMetodo = true
     var esPosible = false
 
@@ -28,13 +28,6 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
         }
     }
 
-    /**
-     * Funcion que nor permite listar nuestros errore sintacticos
-     * @param mensaje; mensaje generado por el error
-     */
-    fun reportarErrores(mensaje: String) {
-        listaErrores.add(Error(mensaje, tokenActual.fila, tokenActual.columna))
-    }
 
     /**
      * Hacer backtracking, ya que no corresponde el término
@@ -58,11 +51,14 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      * <UnidadDeCompilacion> ::= [<VariablesGlobales>] <ListaFunciones> FinCodigo
      */
     fun esUnidadDeCompilacion(): UnidadDeCompilacion? {
+
+        var listaVariablesG: ArrayList<VariableGlobal> = esListaVariablesGlobales()
         var listaFunciones: ArrayList<Funcion> = esListaFunciones()
-        return if (listaFunciones.size > 0) {
-            UnidadDeCompilacion(listaFunciones)
+
+        if (listaFunciones.size > 0 || listaVariablesG.size>0) {
+            return UnidadDeCompilacion(listaFunciones, listaVariablesG)
         } else {
-            null
+            return null
         }
     }
 
@@ -193,6 +189,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
         }
         return null
     }
+
 
     /*
         <BloqueSentencias> ::= "{" [<ListaSentencias>] "}"
@@ -668,6 +665,19 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     /*
+<ListaVariables> ::= <Variable> [<ListaVariables>]
+ */
+    fun esListaVariablesGlobales():ArrayList<VariableGlobal>{
+        var lista = ArrayList<VariableGlobal>()
+        var variable = esNombreVariableGlobal()
+        while(variable != null){
+            lista.add(variable)
+            variable = esNombreVariableGlobal()
+        }
+        return lista
+    }
+
+    /*
     <Variable> ::= identificador ["I" <Expresion>]
      */
     fun esNombreVariable():Variable?{
@@ -685,6 +695,37 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
             } else{
                 return Variable(nombreVariable, null)
             }
+        }
+        return null
+    }
+
+    /*
+<Variable> ::= identificador ["I" <Expresion>]
+ */
+    fun esNombreVariableGlobal():VariableGlobal?{
+        if(tokenActual.categoria == Categoria.VARIABLE_GLOBAL){
+            obtenerSiguienteToken()
+            if(tokenActual.lexema == "etr"
+                    || tokenActual.lexema == "rls" || tokenActual.lexema == "bbn"
+                    || tokenActual.lexema == "crt"|| tokenActual.lexema == "Pal"){
+                obtenerSiguienteToken()
+                if(tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
+                    var nombreVariable = tokenActual
+                    obtenerSiguienteToken()
+                    if(tokenActual.categoria == Categoria.OPERADOR_ASIGNACION){
+                        obtenerSiguienteToken()
+                        var expresion = esExpresion()
+                        if(expresion != null){
+                            return VariableGlobal(nombreVariable, expresion)
+                        } else{
+                            reportarError("Hace falta la expresión")
+                        }
+                    } else{
+                        return VariableGlobal(nombreVariable, null)
+                    }
+                }
+            }
+
         }
         return null
     }
@@ -933,7 +974,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     fun reportarError(mensaje:String){
-        listaErrores.add(Error(mensaje, tokenActual.fila, tokenActual.columna))
+        listaErrores.add(ErrorSintactico(mensaje, tokenActual.fila, tokenActual.columna))
     }
 
 }

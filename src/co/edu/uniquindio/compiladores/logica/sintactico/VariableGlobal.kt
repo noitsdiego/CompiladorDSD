@@ -10,7 +10,7 @@ class VariableGlobal (var nombreVariableGlobal:Token, var expresion:Expresion?) 
     }
 
     fun getArbolVisual(): TreeItem<String> {
-        var raiz = TreeItem<String>("Variable")
+        var raiz = TreeItem<String>("Variable Global")
 
         if (nombreVariableGlobal != null) {
             raiz.children.add(TreeItem("${nombreVariableGlobal.lexema} "))

@@ -4,6 +4,7 @@ import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
 import co.edu.uniquindio.compiladores.logica.lexico.Error
 import co.edu.uniquindio.compiladores.logica.sintactico.AnalizadorSintactico
 import co.edu.uniquindio.compiladores.logica.lexico.Token
+import co.edu.uniquindio.compiladores.logica.sintactico.ErrorSintactico
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -23,11 +24,18 @@ class InicioController: Initializable {
 
     @FXML lateinit var codigoFuente: TextArea
     @FXML lateinit var tablaTokens: TableView<Token>
-    @FXML lateinit var tablaErrores: TableView<Error>
+    @FXML lateinit var tablaErroresLexico: TableView<Error>
+    @FXML lateinit var tablaErroresSintactico: TableView<ErrorSintactico>
     @FXML lateinit var colLexema: TableColumn<Token, String>
     @FXML lateinit var colCategoria: TableColumn<Token, String>
     @FXML lateinit var colFila: TableColumn<Token, String>
     @FXML lateinit var colColumna: TableColumn<Token, String>
+    @FXML lateinit var colMensajeErrorLexico: TableColumn<Error, String>
+    @FXML lateinit var colFilaErrorLexico: TableColumn<Error, String>
+    @FXML lateinit var colColumnaErrorLexico: TableColumn<Error, String>
+    @FXML lateinit var colMensajeErrorSintaxis: TableColumn<ErrorSintactico, String>
+    @FXML lateinit var colFilaErrorSintaxis: TableColumn<ErrorSintactico, String>
+    @FXML lateinit var colColumnaErrorSintaxis: TableColumn<ErrorSintactico, String>
     @FXML lateinit var arbolVisual:TreeView<String>
 
 
@@ -36,6 +44,15 @@ class InicioController: Initializable {
         colCategoria.cellValueFactory = PropertyValueFactory("categoria")
         colFila.cellValueFactory = PropertyValueFactory("fila")
         colColumna.cellValueFactory = PropertyValueFactory("columna")
+
+        colMensajeErrorLexico.cellValueFactory = PropertyValueFactory("error")
+        colFilaErrorLexico.cellValueFactory = PropertyValueFactory("fila")
+        colColumnaErrorLexico.cellValueFactory = PropertyValueFactory("columna")
+
+        colMensajeErrorSintaxis.cellValueFactory = PropertyValueFactory("mensaje")
+        colFilaErrorSintaxis.cellValueFactory = PropertyValueFactory("fila")
+        colColumnaErrorSintaxis.cellValueFactory = PropertyValueFactory("columna")
+
     }
 
     fun AnalizarCodigo ( e: ActionEvent) {
@@ -44,11 +61,13 @@ class InicioController: Initializable {
             val lexico = AnalizadorLexico(codigoFuente.text)
             lexico.analizar()
             tablaTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
-            tablaErrores.items = FXCollections.observableArrayList(lexico.listaErrores)
+            tablaErroresLexico.items = FXCollections.observableArrayList(lexico.listaErrores)
+
             if(lexico.listaErrores.isEmpty())
             {
                 val sintaxis = AnalizadorSintactico(lexico.listaTokens)
                 val uc = sintaxis.esUnidadDeCompilacion()
+                tablaErroresSintactico.items = FXCollections.observableArrayList(sintaxis.listaErrores)
 
                 if (uc != null) {
                     arbolVisual.root = uc.getArbolVisual()

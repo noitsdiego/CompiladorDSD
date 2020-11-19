@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="537.0" prefWidth="933.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.edu.uniquindio.compiladores.interfaz.controlador.InicioController">
    <children>
@@ -32,11 +38,11 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="tablaErrores" layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
+                        <TableView fx:id="tablaErroresLexico" layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
                           <columns>
-                            <TableColumn prefWidth="213.79997634887695" text="Mensaje" />
-                            <TableColumn prefWidth="200.60003662109375" text="Fila" />
-                              <TableColumn prefWidth="149.79998779296875" text="Columna" />
+                            <TableColumn fx:id="colMensajeErrorLexico" prefWidth="213.79997634887695" text="Mensaje" />
+                            <TableColumn fx:id="colFilaErrorLexico" prefWidth="200.60003662109375" text="Fila" />
+                              <TableColumn fx:id="colColumnaErrorLexico" prefWidth="149.79998779296875" text="Columna" />
                           </columns>
                         </TableView>
                      </children></AnchorPane>
@@ -46,9 +52,12 @@
                 <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                         <children>
-                            <TableView layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
-
-                            </TableView>
+                            <TableView fx:id="tablaErroresSintactico" layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
+                           <columns>
+                              <TableColumn fx:id="colMensajeErrorSintaxis" prefWidth="301.0" text="Mensaje" />
+                              <TableColumn fx:id="colFilaErrorSintaxis" prefWidth="118.0" text="Fila" />
+                              <TableColumn fx:id="colColumnaErrorSintaxis" prefWidth="144.0" text="Columna" />
+                           </columns></TableView>
                         </children></AnchorPane>
                 </content>
             </Tab>
@@ -56,9 +65,12 @@
               <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                       <children>
-                          <TableView layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
-
-                          </TableView>
+                          <TableView fx:id="tablaErroresSemanticos" layoutX="-3.0" prefHeight="220.0" prefWidth="564.0">
+                           <columns>
+                              <TableColumn fx:id="colMensajeErrorSemantico" prefWidth="306.0" text="Mensaje" />
+                              <TableColumn fx:id="colColumnaErrorSemantico" prefWidth="150.0" text="Columna" />
+                              <TableColumn fx:id="colFilaErrorSemantico" prefWidth="107.0" text="Fila" />
+                           </columns></TableView>
                       </children></AnchorPane>
               </content>
           </Tab>

@@ -65,6 +65,13 @@ class AnalizadorLexico(var codigoFuente: String) {
     }
 
     /*
+   Almacena los errores
+    */
+    fun almacenarErrores(texto: String, fila: Int, columna: Int) {
+        listaErrores.add(Error(texto, fila, columna))
+    }
+
+    /*
     Verifica el BT
      */
     fun hacerBT(filaInicial: Int, columnaInicial: Int, posicionInicial: Int) {
@@ -112,6 +119,8 @@ class AnalizadorLexico(var codigoFuente: String) {
 
 
             almacenarToken("" + caracterActual, Categoria.NO_IDENTIFICADO, filaActual, columnaActual)
+            almacenarErrores("Token no identificado", filaActual, columnaActual)
+
             obtenerSiguienteCaracter()
         }
 
@@ -259,8 +268,8 @@ class AnalizadorLexico(var codigoFuente: String) {
 
                 if (caracterActual.isDigit()) {
                     lexema += caracterActual
-                    obtenerSiguienteCaracter()
                     almacenarToken(lexema, Categoria.IDENTIFICADOR_VARIABLE, filaInicial, columnaInicial)
+                    obtenerSiguienteCaracter()
                     return true
                 } else {
                     obtenerCaracterInicial()
@@ -305,8 +314,8 @@ class AnalizadorLexico(var codigoFuente: String) {
                 }
 
                 lexema += caracterActual
-                obtenerSiguienteCaracter()
                 almacenarToken(lexema, Categoria.IDENTIFICADOR_CLASE, filaInicial, columnaInicial)
+                obtenerSiguienteCaracter()
                 return true
             } else {
                 obtenerCaracterInicial()
@@ -346,8 +355,8 @@ Verifica si el token es un identificador de metodo
                 }
 
                 lexema += caracterActual
-                obtenerSiguienteCaracter()
                 almacenarToken(lexema, Categoria.IDENTIFICADOR_METODO, filaInicial, columnaInicial)
+                obtenerSiguienteCaracter()
                 return true
             } else {
                 obtenerCaracterInicial()
