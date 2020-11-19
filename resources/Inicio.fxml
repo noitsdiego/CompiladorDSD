@@ -7,7 +7,7 @@
    <children>
       <Button fx:id="Ejecutar" layoutX="30.0" layoutY="23.0" mnemonicParsing="false" onAction="#AnalizarCodigo" text="Analizar Codigo" textAlignment="CENTER" />
       <TextArea fx:id="codigoFuente" layoutX="30.0" layoutY="59.0" prefHeight="200.0" prefWidth="564.0" />
-      <TreeView fx:id="arbolvisual" layoutX="620.0" layoutY="23.0" prefHeight="487.0" prefWidth="290.0" />
+      <TreeView fx:id="arbolVisual" layoutX="620.0" layoutY="23.0" prefHeight="487.0" prefWidth="290.0" />
       <TabPane layoutX="30.0" layoutY="259.0" prefHeight="252.0" prefWidth="564.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Tokens">

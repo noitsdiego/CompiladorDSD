@@ -1,6 +1,7 @@
 package co.edu.uniquindio.compiladores.interfaz.controlador
 
 import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
+import co.edu.uniquindio.compiladores.logica.lexico.Error
 import co.edu.uniquindio.compiladores.logica.sintactico.AnalizadorSintactico
 import co.edu.uniquindio.compiladores.logica.lexico.Token
 import javafx.collections.FXCollections
@@ -43,7 +44,7 @@ class InicioController: Initializable {
             val lexico = AnalizadorLexico(codigoFuente.text)
             lexico.analizar()
             tablaTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
-           // tablaErrores.items = FXCollections.observableArrayList(lexico.listaErrores)
+            tablaErrores.items = FXCollections.observableArrayList(lexico.listaErrores)
             if(lexico.listaErrores.isEmpty())
             {
                 val sintaxis = AnalizadorSintactico(lexico.listaTokens)
