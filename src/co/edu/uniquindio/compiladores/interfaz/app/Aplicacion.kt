@@ -23,6 +23,13 @@ class Aplicacion : Application() {
         primaryStage?.title = "Compilador DSD"
         primaryStage?.show()
     }
+
+    /*
+    ejemplo 1      fun Mhola etr )( !¡
+    ejemplo 2      $variable1|hola_
+    ejemplo 3 + rls $variable1
+     */
+
     companion object{
         @JvmStatic
         fun main( args: Array<String>){
