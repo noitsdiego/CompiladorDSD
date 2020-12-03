@@ -43,6 +43,12 @@ class Funcion (var nombre: Token
 
         tablaSimbolos.guardarSimboloFuncion(nombre.lexema,tipoRetorno.lexema,obtenerTipoDeParametros(),ambito,acceso,nombre.fila,nombre.columna)
 
+        for(p in parametros){
+            tablaSimbolos.guardarSimboloValor(p.nombreParametro.lexema,p.tipoDato.lexema,true,nombre.lexema,acceso,p.nombreParametro.fila,p.nombreParametro.columna)
+        }
+        for(s in bloqueSentencias){
+            s.llenarTablaSimbolos(tablaSimbolos,erroresSemanticos,nombre.lexema,acceso)
+        }
     }
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {
 

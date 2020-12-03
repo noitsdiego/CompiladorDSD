@@ -1,6 +1,8 @@
 package co.edu.uniquindio.compiladores.logica.sintactico
 
 import co.edu.uniquindio.compiladores.logica.lexico.Token
+import co.edu.uniquindio.compiladores.logica.semantico.ErrorSemantico
+import co.edu.uniquindio.compiladores.logica.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
 
 class Arreglo() :Sentencia(){
@@ -41,5 +43,9 @@ class Arreglo() :Sentencia(){
             raiz.children.add(TreeItem("Cuenta ${cantidad!!.lexema}"))
         }
         return raiz
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>, ambito: String, acceso: String) {
+        tablaSimbolos.guardarSimboloValor(nombreArreglo!!.lexema,tipoDato!!.lexema,true,ambito,acceso,nombreArreglo!!.fila,nombreArreglo!!.columna)
     }
 }

@@ -1,5 +1,7 @@
 package co.edu.uniquindio.compiladores.logica.sintactico
 
+import co.edu.uniquindio.compiladores.logica.semantico.ErrorSemantico
+import co.edu.uniquindio.compiladores.logica.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
 
 open class Sentencia {
@@ -90,4 +92,8 @@ open class Sentencia {
         this.retorno = retorno
     }
     constructor()
+
+    open fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>, ambito: String, acceso:String){
+
+    }
 }
