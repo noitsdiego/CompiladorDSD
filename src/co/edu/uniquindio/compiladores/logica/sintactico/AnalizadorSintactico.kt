@@ -275,7 +275,8 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     /*
-        <Decision> ::= $si “)” <ExpresionLogica> “(” <BloqueSentencias> [$sino<BloqueSentencia>]
+        <Decision> ::= $si “)” <Expresion> “(” <BloqueSentencias> [$sino<BloqueSentencia>]
+        | $si “)” <Expresion> “(” <BloqueSentencias> [$o<BloqueSentencia>]
          */
     fun esDecision():Decision?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "\$si"){
@@ -299,6 +300,16 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
                             } else{
                                 return Decision(expresion, bloqueSentenciasS, null)
                             }
+                            if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "\$o"){
+                                obtenerSiguienteToken()
+                                var bloqueSentenciasO = esBloqueSentencias()
+                                if(bloqueSentenciasO != null){
+                                    return Decision(expresion, bloqueSentenciasS, bloqueSentenciasO)
+                                }
+                            } else{
+                                return Decision(expresion, bloqueSentenciasS, null)
+                            }
+
                         }
                     } else{
                         reportarError("Hace falta el parentesis derecho")
@@ -577,7 +588,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
                            }
                            if(tokenActual.categoria==Categoria.AGRUPADOR_SEN_CERRAR){
                                obtenerSiguienteToken()
-                               print("sirvio entro al arreglo")
+
                                return Arreglo(nombre,tipo)
                            }else{
                                reportarError("Hacen falta el agrupador cerrar sentencia")

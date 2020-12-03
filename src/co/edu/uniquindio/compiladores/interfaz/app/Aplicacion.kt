@@ -42,6 +42,11 @@ class  Aplicacion : Application() {
 
     yarra $d1 etr I !¡
     ¡
+
+    fun Mfuncion bbn )(!
+
+    $si )$c1 AND $X2(
+    ¡
      */
 
     companion object{
