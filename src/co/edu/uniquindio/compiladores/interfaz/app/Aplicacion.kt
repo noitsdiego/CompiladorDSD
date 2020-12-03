@@ -11,7 +11,7 @@ import javafx.stage.Stage
 /*
     @Autor: Diego riveros, Stefanny roman y Daniel Loaiza
  */
-class Aplicacion : Application() {
+class  Aplicacion : Application() {
 
     override fun start(primaryStage: Stage?) {
         val loader = FXMLLoader(Aplicacion::class.java.getResource("/Inicio.fxml"))
@@ -28,6 +28,16 @@ class Aplicacion : Application() {
     ejemplo 1      fun Mhola etr )( !¡
     ejemplo 2      $variable1|hola_
     ejemplo 3 + rls $variable1
+
+    fun Mfuncion bbn )bbn $variableParametro1 | bbn $variableParametro2 | bbn $variableParametro3(
+    !
+        impp > $variableInterador1 < _
+        $variableParametro2  I Z232_
+        $si ) NOT $variablePutable1 MEN $variablePutable1 (
+        ¡
+
+        !
+    !
      */
 
     companion object{

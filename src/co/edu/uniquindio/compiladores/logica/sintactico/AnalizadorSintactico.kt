@@ -29,6 +29,7 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
 
+
     /**
      * Hacer backtracking, ya que no corresponde el término
      */
@@ -52,11 +53,13 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      */
     fun esUnidadDeCompilacion(): UnidadDeCompilacion? {
 
+
         var listaVariablesG: ArrayList<VariableGlobal> = esListaVariablesGlobales()
         var listaFunciones: ArrayList<Funcion> = esListaFunciones()
 
-        if (listaFunciones.size > 0 || listaVariablesG.size>0) {
-            return UnidadDeCompilacion(listaFunciones, listaVariablesG)
+
+        if (listaVariablesG.size>0||listaFunciones.size > 0) {
+            return UnidadDeCompilacion(listaVariablesG, listaFunciones)
         } else {
             return null
         }
@@ -78,11 +81,11 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
 
 
     /*
-    <DeclaracionMetodos> ::= fonc <NombreMetodo> <tipoRetorno> “(“ [<Parametros>] “)” “{” <Sentencia> “}”
     <Funcion> ::= “fun” <NombreMetodo> <TipoRetorno> “)“ [<ListaParametros>] “(” <BloqueSentencias>
      */
     fun esFuncion(): Funcion? {
         if(tokenActual.categoria == Categoria.FUNCION && tokenActual.lexema == "fun"){
+            var funIdenti = tokenActual
             obtenerSiguienteToken()
             if(tokenActual.categoria == Categoria.IDENTIFICADOR_METODO){
                 var nombreFuncion = tokenActual
@@ -91,13 +94,16 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
                 if(tipoRetorno != null) {
                     obtenerSiguienteToken()
                     if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_ABRIR) {
+                        var agrupador1 = tokenActual
                         obtenerSiguienteToken()
                         var listaParametros = esListaParametros()
                         if (tokenActual.categoria == Categoria.AGRUPADOR_METODO_CERRAR) {
+                            var agrupador2 = tokenActual
                             obtenerSiguienteToken()
                             var bloqueSentencias = esBloqueSentencias()
                             if (bloqueSentencias != null) {
-                                return Funcion(nombreFuncion,tipoRetorno, listaParametros, bloqueSentencias)
+                                return Funcion(funIdenti, tipoRetorno , nombreFuncion,agrupador1,
+                                        listaParametros, agrupador2, bloqueSentencias)
                             } else {
                                 reportarError("El bloque de sentencias está vacía")
                             }
@@ -135,47 +141,40 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     fun esListaParametros():ArrayList<Parametro> {
         var listaParametros = ArrayList<Parametro>()
         var parametro = esParametro()
+
         while (parametro != null) {
             listaParametros.add(parametro)
-            if(tokenActual.categoria == Categoria.SEPARADOR){
+            obtenerSiguienteToken()
+            if(tokenActual.categoria != Categoria.SEPARADOR){
+                return listaParametros
+            }else
+            {
                 obtenerSiguienteToken()
                 parametro = esParametro()
-            } else{
-                if(tokenActual.categoria != Categoria.AGRUPADOR_METODO_ABRIR){
-                    reportarError("Hace falta la coma en la lista de parametros")
-                }
-                break
             }
         }
         return listaParametros
     }
 
     /*
-        <Parametro> ::= <TipoDato> = <NombreDato> [“,” <Parametro>]
-        <Parametro> ::= <TipoDato> “I” <NombreVariable>[“|” <Parametro>]
+        <Parametro> ::= <TipoDato> <NombreDato> [“,” <Parametro>]
+        <Parametro> ::= <TipoDato> <NombreVariable>[“|” <Parametro>]
          */
     fun esParametro():Parametro?{
         var tipoDato = esTipoDato()
         if(tipoDato != null){
             obtenerSiguienteToken()
-            if(tokenActual.categoria == Categoria.OPERADOR_ASIGNACION){
-                var caracter = tokenActual
-                obtenerSiguienteToken()
                 if(tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
                     var nombreParametro = tokenActual
-                    obtenerSiguienteToken()
-                    return Parametro(tipoDato, caracter, nombreParametro)
+                    return Parametro(tipoDato, nombreParametro)
                 } else{
                     reportarError("Hace falta el nombre del dato")
                 }
-            } else{
-                reportarError("Hace falta el caracter igual")
-            }
-        } else{
-            reportarError("Espacio en blanco, por favor indique el parámetro")
         }
-        return  null
+            return  null
     }
+
+
 
     /*
     <TipoDato> ::= etr | rls | bbn | crt | Pal
@@ -536,12 +535,15 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
      */
     fun esRetorno():Retorno?{
         if(tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ret"){
+            var retorno = tokenActual
             obtenerSiguienteToken()
             var expresion = esExpresion()
             if(expresion != null){
+                obtenerSiguienteToken()
                 if(tokenActual.categoria == Categoria.FINAL_SENTENCIA){
+                    var fin = tokenActual
                     obtenerSiguienteToken()
-                    return Retorno(expresion)
+                    return Retorno(retorno, expresion, fin)
                 } else{
                     reportarError("Hace falta el fin de sentencia al final del retorno")
                 }

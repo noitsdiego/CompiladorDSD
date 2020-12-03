@@ -1,49 +1,31 @@
 package co.edu.uniquindio.compiladores.logica.sintactico
 
+import co.edu.uniquindio.compiladores.logica.semantico.ErrorSemantico
+import co.edu.uniquindio.compiladores.logica.semantico.Simbolo
+import co.edu.uniquindio.compiladores.logica.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
+import java.util.ArrayList
 
-open class Expresion {
-    //<ExpresionAritmetica> | <ExpresionRelacional> | <ExpresionLogica> | |<ExpresionCadena>
-    var expreRelacional:ExpresionRelacional? = null
-    var expreAritmetica:ExpresionAritmetica? = null
-    var expreCadena:ExpresionCadena? = null
-    var expreLogica: ExpresionLogica? = null
+open abstract class Expresion() {
 
-    override fun toString(): String {
-        if(expreRelacional!= null){
-            return "Expresion Relacional :( ${expreRelacional} )"
-        }else{if(expreAritmetica!= null){
-                return "Expresion Arirmetica :( ${expreAritmetica} )"
-            }else{if(expreLogica!= null){
-                    return "Expresion Logica :( ${expreLogica} )"
-                }else{if(expreCadena!= null){
-                        return "Expresion Cadena :( ${expreCadena} )"
-                        }else{
-                            return "expresion no encontrada"
-                            }
-                       }
-                }
-        }
-        return super.toString()
+    open fun getArbolVisual(): TreeItem<String>? {
+        return null
     }
 
-    open fun getArbolVisual():TreeItem<String>{
-        return  TreeItem("Expresion")
-    }
-    constructor(expreRelacional:ExpresionRelacional){
-        this.expreRelacional= expreRelacional
+    open fun obtenerTipo(tablaSimbolos: TablaSimbolos, ambito: Simbolo): String {
+        return ""
     }
 
-    constructor(expreAritmetica:ExpresionAritmetica){
-        this.expreAritmetica= expreAritmetica
+    open fun analizarSemantica(
+            tablaSimbolos: TablaSimbolos,
+            erroresSemanticos: ArrayList<ErrorSemantico>,
+            ambito: Simbolo
+    ) {
     }
-    constructor(expreCadena:ExpresionCadena){
-        this.expreCadena= expreCadena
-    }
-    constructor(expreLogica:ExpresionLogica){
-        this.expreLogica= expreLogica
-    }
-    constructor(){
 
+
+    open fun getJavaCode(): String {
+        return ""
     }
+
 }

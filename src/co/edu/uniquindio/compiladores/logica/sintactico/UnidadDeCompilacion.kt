@@ -4,17 +4,17 @@ import co.edu.uniquindio.compiladores.logica.semantico.Simbolo
 import co.edu.uniquindio.compiladores.logica.semantico.ErrorSemantico
 import javafx.scene.control.TreeItem
 
-class UnidadDeCompilacion (var listaFunciones:ArrayList<Funcion>, var listaGlobales:ArrayList<VariableGlobal>) {
+class UnidadDeCompilacion (var listaGlobales:ArrayList<VariableGlobal>, var listaFunciones:ArrayList<Funcion>) {
 
     override fun toString(): String {
-        return "UnidadDeCompilacion(listaFunciones=$listaFunciones, listaVariablesGlobales= $listaGlobales)"
+        return "UnidadDeCompilacion(listaVariablesGlobales= $listaGlobales, listaFunciones=$listaFunciones)"
     }
     fun getArbolVisual():TreeItem<String>{
 
         var raiz= TreeItem<String>("Unidad de Compilación")
 
-        for (f in listaGlobales){
-            raiz.children.add(f.getArbolVisual())
+        for (v in listaGlobales){
+            raiz.children.add(v.getArbolVisual())
         }
 
         for (f in listaFunciones){
@@ -24,13 +24,14 @@ class UnidadDeCompilacion (var listaFunciones:ArrayList<Funcion>, var listaGloba
         return  raiz
 
     }
-    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {
+    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: java.util.ArrayList<ErrorSemantico>) {
         for (f in listaFunciones) {
-            var ambitoFuncion : Simbolo = Simbolo("UnidadCompilacion",null,false,null,null,0,0)
+            var ambitoFuncion : Simbolo = Simbolo("UnidadCompilacion",null,false,null,0,0)
 
             f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos,ambitoFuncion )
         }
     }
+
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {
         for (f in listaFunciones) {
             f.analizarSemantica(tablaSimbolos, erroresSemanticos)

@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem
 class CicloEliw (var expresionRelacional: ExpresionRelacional, var listaSentencia:ArrayList<Sentencia>):Ciclo() {
 
     override fun toString(): String {
-        return "CicloEliw(expresionRelacional=$expresionRelacional, listaSentencia=$listaSentencia, expresionIterador=$incrementoDecremento)"
+        return "CicloEliw(expresionRelacional=$expresionRelacional, listaSentencia=$listaSentencia)"
     }
     override fun getArbolVisual(): TreeItem<String> {
         var raiz = TreeItem<String>("Ciclo Eliw")
@@ -19,7 +19,6 @@ class CicloEliw (var expresionRelacional: ExpresionRelacional, var listaSentenci
         }
         raiz.children.addAll(raizSentencia)
 
-        raiz.children.add(incrementoDecremento!!.getArbolVisual())
 
         return  raiz
     }
