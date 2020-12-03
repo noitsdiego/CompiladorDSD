@@ -34,10 +34,10 @@ class  Aplicacion : Application() {
         impp > $variableInterador1 < _
         $variableParametro2  I Z232_
         $si ) NOT $variablePutable1 MEN $variablePutable1 (
-        ¡
-
         !
-    !
+
+        ¡
+    ¡
      */
 
     companion object{
