@@ -26,9 +26,9 @@ class UnidadDeCompilacion (var listaFunciones:ArrayList<Funcion>, var listaGloba
     }
     fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {
         for (f in listaFunciones) {
-            var ambitoFuncion : Simbolo = Simbolo("UnidadCompilacion",null,false,null,null,0,0)
+          //  var ambitoFuncion : Simbolo = Simbolo("UnidadCompilacion",null,false,null,null,0,0)
 
-            f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos,ambitoFuncion )
+            f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos, "UnidadCompilacion" ,"UnidadCompilacion")
         }
     }
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {
@@ -36,7 +36,7 @@ class UnidadDeCompilacion (var listaFunciones:ArrayList<Funcion>, var listaGloba
             f.analizarSemantica(tablaSimbolos, erroresSemanticos)
         }
     }
-
+/*
     fun getJavaCode(): String {
         var codigo = "import javax.swing.*;\n public class Principal{\n"
         for (funcion in listaFunciones) {
@@ -45,4 +45,6 @@ class UnidadDeCompilacion (var listaFunciones:ArrayList<Funcion>, var listaGloba
         codigo += "\n}"
         return codigo
     }
+
+ */
 }

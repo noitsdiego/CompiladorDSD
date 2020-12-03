@@ -13,7 +13,7 @@ class Simbolo (){
     /**
      * Constructor para crear un simbolo de tipo valor
      */
-    constructor(nombre:String, tipoDato:String , modificable:Boolean, ambito:String,acceso:String, fila:Int, columna:Int){
+    constructor(nombre:String, tipoDato:String , modificable:Boolean, ambito:String,acceso:String, fila:Int, columna:Int):this(){
         this.nombre=nombre
         this.tipo=tipoDato
         this.modificable=modificable
@@ -25,7 +25,7 @@ class Simbolo (){
     /**
      * Constructor para crear un simbolo de tipo Metodo(funcion)
      */
-    constructor(nombre:String, tipoRetorno:String,tipoParametros:ArrayList<String>,ambito:String,acceso: String){
+    constructor(nombre:String, tipoRetorno:String,tipoParametros:ArrayList<String>,ambito:String,acceso: String):this(){
         this.nombre=nombre
         this.tipo=tipoRetorno
         this.tipoParametros=tipoParametros
