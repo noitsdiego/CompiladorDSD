@@ -4,6 +4,7 @@ import co.edu.uniquindio.compiladores.logica.lexico.AnalizadorLexico
 import co.edu.uniquindio.compiladores.logica.lexico.Error
 import co.edu.uniquindio.compiladores.logica.sintactico.AnalizadorSintactico
 import co.edu.uniquindio.compiladores.logica.lexico.Token
+import co.edu.uniquindio.compiladores.logica.semantico.AnalizadorSemantico
 import co.edu.uniquindio.compiladores.logica.sintactico.ErrorSintactico
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
@@ -71,6 +72,12 @@ class InicioController: Initializable {
 
                 if (uc != null) {
                     arbolVisual.root = uc.getArbolVisual()
+
+                    val semantica=AnalizadorSemantico(uc!!)
+                    semantica.llenarTablaSimbolos()
+                    print(semantica.tablaSimbolos)
+                    print(semantica.erroresSemanticos)
+
                 }
             }
         }
