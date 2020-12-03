@@ -38,6 +38,10 @@ class  Aplicacion : Application() {
 
         ¡
     ¡
+    fun Mfuncion bbn )(!
+
+    yarra $d1 etr I !¡
+    ¡
      */
 
     companion object{

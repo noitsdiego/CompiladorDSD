@@ -3,7 +3,8 @@ package co.edu.uniquindio.compiladores.logica.sintactico
 import co.edu.uniquindio.compiladores.logica.lexico.Categoria
 import co.edu.uniquindio.compiladores.logica.lexico.Token
 import co.edu.uniquindio.compiladores.logica.lexico.Error
-import java.util.ArrayList
+
+
 
 class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
 
@@ -274,7 +275,6 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     /*
-        <Decision> ::= si  “(” <ExpresionLogica> “)” <BloqueSentencia> [autre <BloqueSentencia>]
         <Decision> ::= $si “)” <ExpresionLogica> “(” <BloqueSentencias> [$sino<BloqueSentencia>]
          */
     fun esDecision():Decision?{
@@ -555,61 +555,54 @@ class AnalizadorSintactico (var listaTokens: ArrayList<Token>) {
     }
 
     /*
-    <Lista> ::= yarra <identificador> _<Tipo Dato>_ “:” "(" [Entero] ")"
+    <Lista> ::= yarra <identificador> _<Tipo Dato>_ “=” "(" [Entero] ")"
 
      */
     fun esArreglo():Arreglo?{
+       if(tokenActual.lexema =="yarra"){
+           obtenerSiguienteToken()
+           if (tokenActual.categoria==Categoria.IDENTIFICADOR_VARIABLE){
+               var nombre=tokenActual
+               obtenerSiguienteToken()
+               if (tokenActual.lexema == "etr"
+                       || tokenActual.lexema == "rls" || tokenActual.lexema == "bbn" || tokenActual.lexema == "crt"|| tokenActual.lexema == "Pal"){
+                   var tipo=tokenActual
+                   obtenerSiguienteToken()
+                   if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION){
+                       obtenerSiguienteToken()
+                       if(tokenActual.categoria==Categoria.AGRUPADOR_SEN_ABRIR){
+                           obtenerSiguienteToken()
+                           if(tokenActual.categoria==Categoria.ENTERO){
+                               obtenerSiguienteToken()
+                           }
+                           if(tokenActual.categoria==Categoria.AGRUPADOR_SEN_CERRAR){
+                               obtenerSiguienteToken()
+                               print("sirvio entro al arreglo")
+                               return Arreglo(nombre,tipo)
+                           }else{
+                               reportarError("Hacen falta el agrupador cerrar sentencia")
+                           }
+                       }
+                       else{
+                           reportarError("Hacen falta el agrupador de abrir sentencia")
+                       }
+                   }
+                   else{
+                       reportarError("Hacen falta el operador de asignacion")
+                   }
 
-        if(tokenActual.categoria == Categoria.ARREGLO && tokenActual.lexema =="yarra"){
-            obtenerSiguienteToken()
-            if (tokenActual.categoria == Categoria.IDENTIFICADOR_VARIABLE){
-                var nombreVariable=tokenActual
-                obtenerSiguienteToken()
-                if (tokenActual.lexema == "_"){
-                    obtenerSiguienteToken()
-                    var tipoLista=esTipoDato()
-                    if (tipoLista!=null){
-                        obtenerSiguienteToken()
-                        if (tokenActual.lexema == "_"){
-                            obtenerSiguienteToken()
-                            if (tokenActual.lexema == ":"){
-                                obtenerSiguienteToken()
-                                if (tokenActual.lexema == "("){
-                                    obtenerSiguienteToken()
-                                    if (tokenActual.lexema == ")"){
-                                        return Arreglo(nombreVariable,tipoLista)
-                                    }else{
-                                        if (tokenActual.categoria == Categoria.ENTERO) {
-                                            var numero = tokenActual
-                                            obtenerSiguienteToken()
-                                            if (tokenActual.lexema == ")"){
-                                                return Arreglo(nombreVariable,tipoLista,numero)
-                                            }else{
-                                                reportarError("Falta el parentesis que cierra")
-                                            }
-                                        }else{
-                                            reportarError("Se esperaba un valor numerico entero")
-                                        }
-                                    }
-                                }else{
-                                    reportarError("Falta el parentesis que abre")
-                                }
-                            }else{
-                                reportarError("Falta el operador de asignacion")
-                            }
-                        }else{
-                            reportarError("Falta '_' que cierra")
-                        }
-                    }else{
-                        reportarError("Falta especificar el tipo de lista")
-                    }
-                }else{
-                    reportarError("Falta '_' que abre")
-                }
-            }else{
-                reportarError("Falta el identificador de la lista")
-            }
-        }
+               }
+               else{
+                   reportarError("Hacen falta el tipo de dato")
+               }
+           }
+           else{
+               reportarError("Hacen falta el identificador de variable")
+           }
+
+       }else {
+           reportarError("Hacen falta la palabra reservada para el arreglo")
+       }
         return null
     }
 
