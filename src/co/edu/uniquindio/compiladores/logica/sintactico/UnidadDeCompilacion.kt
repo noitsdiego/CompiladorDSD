@@ -30,6 +30,11 @@ class UnidadDeCompilacion (var listaGlobales:ArrayList<VariableGlobal>, var list
 
             f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos,ambitoFuncion )
         }
+        for (f in listaGlobales) {
+            var ambitoGlobales : Simbolo = Simbolo("UnidadCompilacion",null,false,null,0,0)
+
+            f.llenarTablaSimbolos(tablaSimbolos, erroresSemanticos,ambitoGlobales )
+        }
     }
 
     fun analizarSemantica(tablaSimbolos: TablaSimbolos, erroresSemanticos: ArrayList<ErrorSemantico>) {

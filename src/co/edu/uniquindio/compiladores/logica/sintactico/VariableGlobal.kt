@@ -1,6 +1,9 @@
 package co.edu.uniquindio.compiladores.logica.sintactico
 
 import co.edu.uniquindio.compiladores.logica.lexico.Token
+import co.edu.uniquindio.compiladores.logica.semantico.ErrorSemantico
+import co.edu.uniquindio.compiladores.logica.semantico.Simbolo
+import co.edu.uniquindio.compiladores.logica.semantico.TablaSimbolos
 import javafx.scene.control.TreeItem
 
 class VariableGlobal (var nombreVariableGlobal:Token, var expresion:Expresion?) {
@@ -21,5 +24,14 @@ class VariableGlobal (var nombreVariableGlobal:Token, var expresion:Expresion?) 
 
 
         return raiz
+    }
+    fun llenarTablaSimbolos(
+            tablaSimbolos: TablaSimbolos,
+            erroresSemanticos: java.util.ArrayList<ErrorSemantico>,
+            ambito: Simbolo
+
+    ) {
+
+        tablaSimbolos.guardarSimboloValor(nombreVariableGlobal.lexema,"",ambito,nombreVariableGlobal.fila,nombreVariableGlobal.columna)
     }
 }
